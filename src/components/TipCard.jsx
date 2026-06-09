@@ -3,6 +3,7 @@
  * @module components/TipCard
  */
 
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Circle, CheckCircle } from 'lucide-react';
 
@@ -30,12 +31,19 @@ const DOT_COLOR_MAP = {
  * Displays a single action tip with CO₂ savings estimate.
  * @param {object} props - Component props
  * @param {object} props.tip - Tip data object
- * @param {Function} props.onComplete - Mark done handler
+ * @param {Function} props.onComplete - Mark done handler (receives tip id)
  * @returns {React.ReactElement} Rendered tip card
  */
 function TipCard({ tip, onComplete }) {
   const borderClass = BORDER_COLOR_MAP[tip.color] || 'border-l-muted';
   const dotClass = DOT_COLOR_MAP[tip.color] || 'bg-muted';
+
+  /**
+   * Handles tip completion click, passing tip ID to parent.
+   */
+  const handleComplete = useCallback(() => {
+    onComplete(tip.id);
+  }, [onComplete, tip.id]);
 
   return (
     <div className={`bg-surface1 border-l-4 ${borderClass} rounded-xl p-4 flex items-center gap-3 shadow-card`}>
@@ -58,7 +66,7 @@ function TipCard({ tip, onComplete }) {
       {/* Checkmark button */}
       <button
         type="button"
-        onClick={onComplete}
+        onClick={handleComplete}
         aria-label={`Mark tip as complete: ${tip.text}`}
         className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors duration-150 ${
           tip.done

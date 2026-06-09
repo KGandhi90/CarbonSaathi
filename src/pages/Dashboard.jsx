@@ -4,45 +4,47 @@
  * @module pages/Dashboard
  */
 
-import { Link } from 'react-router-dom';
+import { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ScoreRing from '../components/ScoreRing';
 import CategoryCard from '../components/CategoryCard';
 import WeeklyChart from '../components/WeeklyChart';
 import TipCard from '../components/TipCard';
-import {
-  userProfile,
-  todayBreakdown,
-  weeklyData,
-  tips,
-} from '../data/mockData';
-
-/**
- * No-op handler for tip completion.
- * Will be wired in Phase 2.
- */
-const handleTipComplete = () => {};
-
-/**
- * Returns the score label and emoji based on score value.
- * @param {number} score - Carbon score 0-100
- * @returns {{ label: string, emoji: string }} Score label data
- */
-function getScoreLabel(score) {
-  if (score < 40) {
-    return { label: 'Low Impact', emoji: '🌿' };
-  }
-  if (score < 70) {
-    return { label: 'Moderate Impact', emoji: '⚡' };
-  }
-  return { label: 'High Impact', emoji: '⚠️' };
-}
+import { useAppContext } from '../context/AppContext';
+import { useTips } from '../hooks/useTips';
+import { calcScore, getScoreLabel } from '../utils/carbonCalc';
+import { getGreeting } from '../utils/helpers';
+import { trackEvent } from '../utils/analytics';
+import { todayBreakdown } from '../data/mockData';
 
 /**
  * Dashboard page component.
  * @returns {React.ReactElement} Rendered dashboard
  */
 function Dashboard() {
-  const scoreLabel = getScoreLabel(userProfile.score);
+  const { weeklyData, userProfile } = useAppContext();
+  const { tips, completeTip, completedCount, totalSavings } = useTips();
+  const navigate = useNavigate();
+
+  /** @type {string} Time-based greeting */
+  const greeting = useMemo(() => getGreeting(), []);
+
+  /** @type {number} Carbon score derived from daily average */
+  const score = useMemo(
+    () => calcScore(userProfile.avgDaily),
+    [userProfile.avgDaily]
+  );
+
+  /** @type {{ label: string, variant: string }} Score label and color */
+  const scoreLabel = useMemo(() => getScoreLabel(score), [score]);
+
+  /**
+   * Navigates to log page and fires analytics event.
+   */
+  const handleCTAClick = useCallback(() => {
+    trackEvent('Dashboard', 'CTAClicked');
+    navigate('/log');
+  }, [navigate]);
 
   return (
     <div className="page-enter space-y-5" role="main">
@@ -56,7 +58,7 @@ function Dashboard() {
         <div className="flex justify-between items-start">
           <div>
             <p className="font-sans text-sm text-white/70 mb-1">
-              Good morning 🌱
+              {greeting}
             </p>
             <h1 className="font-display text-2xl sm:text-3xl text-white leading-tight">
               Your Carbon Score
@@ -64,11 +66,11 @@ function Dashboard() {
 
             {/* Score chip */}
             <span className="inline-block mt-3 bg-white/20 text-white rounded-full px-3 py-1 text-xs font-medium">
-              {scoreLabel.label} {scoreLabel.emoji}
+              {scoreLabel.label}
             </span>
           </div>
 
-          <ScoreRing score={userProfile.score} size={80} light />
+          <ScoreRing score={score} size={80} light />
         </div>
 
         {/* Stats strip */}
@@ -123,6 +125,24 @@ function Dashboard() {
         </div>
         <div className="bg-surface1 border border-surface3 rounded-2xl p-5 shadow-card">
           <WeeklyChart data={weeklyData} />
+          {/* Accessible data table for screen readers */}
+          <table className="sr-only">
+            <caption>Weekly CO₂ emissions in kg</caption>
+            <thead>
+              <tr>
+                <th scope="col">Day</th>
+                <th scope="col">kg CO₂</th>
+              </tr>
+            </thead>
+            <tbody>
+              {weeklyData.map((d) => (
+                <tr key={d.day}>
+                  <td>{d.day}</td>
+                  <td>{d.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -138,20 +158,34 @@ function Dashboard() {
             <TipCard
               key={tip.id}
               tip={tip}
-              onComplete={handleTipComplete}
+              onComplete={completeTip}
             />
           ))}
         </div>
+
+        {/* Savings banner */}
+        {completedCount > 0 && (
+          <div
+            className="bg-secondary/10 border border-secondary/20 rounded-xl p-3 mt-2 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="font-mono text-sm text-secondary">
+              ✓ {completedCount} tip{completedCount > 1 ? 's' : ''} done · Saves {totalSavings.toFixed(1)} kg CO₂ today
+            </span>
+          </div>
+        )}
       </section>
 
       {/* CTA Button */}
-      <Link
-        to="/log"
+      <button
+        type="button"
+        onClick={handleCTAClick}
         className="block w-full bg-primary hover:bg-primary/90 text-white font-semibold text-sm text-center rounded-2xl py-4 mt-2 transition-colors duration-150 shadow-card"
         aria-label="Navigate to log activity page"
       >
         Log Today&apos;s Activities →
-      </Link>
+      </button>
     </div>
   );
 }

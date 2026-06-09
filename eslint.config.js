@@ -25,6 +25,12 @@ export default [
         window: 'readonly',
         navigator: 'readonly',
         console: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        parseFloat: 'readonly',
+        isNaN: 'readonly',
       },
     },
     rules: {

@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import ActivitySection from '../components/ActivitySection';
 import { useAppContext } from '../context/AppContext';
@@ -266,26 +267,17 @@ function LogActivity() {
           aria-label="Select transport mode"
           onKeyDown={handleTransportKeyDown}
         >
-          {transportModes.map((mode) => {
-            const isSelected = mode.id === transportMode;
-            return (
-              <button
-                key={mode.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => handleTransportModeSelect(mode.id)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
-                  isSelected
-                    ? 'bg-amber text-white'
-                    : 'bg-surface2 text-muted hover:bg-amber/10 hover:text-amber'
-                }`}
-              >
-                {mode.label}
-              </button>
-            );
-          })}
+          {transportModes.map((mode) => (
+            <RadioButton
+              key={mode.id}
+              id={mode.id}
+              label={mode.label}
+              isSelected={mode.id === transportMode}
+              onSelect={handleTransportModeSelect}
+              activeClass="bg-amber text-white"
+              inactiveClass="bg-surface2 text-muted hover:bg-amber/10 hover:text-amber"
+            />
+          ))}
         </div>
 
         {/* Distance input */}
@@ -343,26 +335,17 @@ function LogActivity() {
           aria-label="Select food type"
           onKeyDown={handleFoodKeyDown}
         >
-          {foodTypes.map((food) => {
-            const isSelected = food.id === foodType;
-            return (
-              <button
-                key={food.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => handleFoodTypeSelect(food.id)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
-                  isSelected
-                    ? 'bg-secondary text-white'
-                    : 'bg-surface2 text-muted hover:bg-secondary/10 hover:text-secondary'
-                }`}
-              >
-                {food.label}
-              </button>
-            );
-          })}
+          {foodTypes.map((food) => (
+            <RadioButton
+              key={food.id}
+              id={food.id}
+              label={food.label}
+              isSelected={food.id === foodType}
+              onSelect={handleFoodTypeSelect}
+              activeClass="bg-secondary text-white"
+              inactiveClass="bg-surface2 text-muted hover:bg-secondary/10 hover:text-secondary"
+            />
+          ))}
         </div>
 
         {/* Meals stepper */}
@@ -513,26 +496,17 @@ function LogActivity() {
           aria-label="Select shopping category"
           onKeyDown={handleShoppingKeyDown}
         >
-          {shoppingTypes.map((type) => {
-            const isSelected = type.id === shoppingType;
-            return (
-              <button
-                key={type.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => handleShoppingTypeSelect(type.id)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
-                  isSelected
-                    ? 'bg-coral text-white'
-                    : 'bg-surface2 text-muted hover:bg-coral/10 hover:text-coral'
-                }`}
-              >
-                {type.label}
-              </button>
-            );
-          })}
+          {shoppingTypes.map((type) => (
+            <RadioButton
+              key={type.id}
+              id={type.id}
+              label={type.label}
+              isSelected={type.id === shoppingType}
+              onSelect={handleShoppingTypeSelect}
+              activeClass="bg-coral text-white"
+              inactiveClass="bg-surface2 text-muted hover:bg-coral/10 hover:text-coral"
+            />
+          ))}
         </div>
 
         {/* Spend input */}
@@ -586,5 +560,51 @@ function LogActivity() {
     </div>
   );
 }
+
+/**
+ * Reusable radio button component for toggle groups.
+ * Extracted to avoid inline arrow functions in JSX.
+ * @param {object} props - Component props
+ * @param {string} props.id - Option identifier
+ * @param {string} props.label - Display label
+ * @param {boolean} props.isSelected - Whether this option is active
+ * @param {Function} props.onSelect - Selection handler receiving id
+ * @param {string} props.activeClass - Tailwind classes when selected
+ * @param {string} props.inactiveClass - Tailwind classes when not selected
+ * @returns {React.ReactElement} Rendered radio button
+ */
+function RadioButton({ id, label, isSelected, onSelect, activeClass, inactiveClass }) {
+  const handleClick = useCallback(() => {
+    onSelect(id);
+  }, [onSelect, id]);
+
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={isSelected}
+      tabIndex={isSelected ? 0 : -1}
+      onClick={handleClick}
+      className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${isSelected ? activeClass : inactiveClass}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+RadioButton.propTypes = {
+  /** Option identifier */
+  id: PropTypes.string.isRequired,
+  /** Display label */
+  label: PropTypes.string.isRequired,
+  /** Whether this option is active */
+  isSelected: PropTypes.bool.isRequired,
+  /** Selection handler receiving id */
+  onSelect: PropTypes.func.isRequired,
+  /** Tailwind classes when selected */
+  activeClass: PropTypes.string.isRequired,
+  /** Tailwind classes when not selected */
+  inactiveClass: PropTypes.string.isRequired,
+};
 
 export default LogActivity;

@@ -1,12 +1,16 @@
 /**
  * @fileoverview AI Advisor chat page.
  * Shows conversation with CarbonSaathi AI assistant.
+ * Uses mock replies; Gemini API wired in Phase 3.
  * @module pages/Chat
  */
 
+import { useRef, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Leaf, SendHorizontal } from 'lucide-react';
 import ChatBubble from '../components/ChatBubble';
-import { chatSeedMessages, userProfile } from '../data/mockData';
+import { useAppContext } from '../context/AppContext';
+import { useChat } from '../hooks/useChat';
 
 /**
  * Suggested quick reply questions for the chat.
@@ -24,22 +28,69 @@ const QUICK_REPLIES = [
 ];
 
 /**
- * No-op handler for send action.
- * Will be wired in Phase 3.
+ * Typing indicator dot indices for staggered animation.
+ * @type {number[]}
  */
-const handleSend = () => {};
-
-/**
- * No-op handler for quick reply selection.
- * Will be wired in Phase 3.
- */
-const handleQuickReply = () => {};
+const TYPING_DOTS = [0, 1, 2];
 
 /**
  * Chat page component — AI Advisor interface.
  * @returns {React.ReactElement} Rendered chat page
  */
 function Chat() {
+  const { chatSeedMessages, userProfile } = useAppContext();
+  const {
+    messages,
+    input,
+    isTyping,
+    setInput,
+    sendMessage,
+    handleKeyDown,
+  } = useChat(chatSeedMessages);
+
+  const messagesRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  // Auto-scroll to bottom on new messages or typing state change
+  useEffect(() => {
+    messagesRef.current?.scrollTo({
+      top: messagesRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [messages, isTyping]);
+
+  /**
+   * Handles input change for the textarea.
+   * @param {React.ChangeEvent<HTMLTextAreaElement>} e - Change event
+   */
+  const handleInputChange = useCallback((e) => {
+    setInput(e.target.value);
+  }, [setInput]);
+
+  /**
+   * Auto-expands textarea height based on content.
+   * @param {React.FormEvent<HTMLTextAreaElement>} e - Input event
+   */
+  const handleTextareaResize = useCallback((e) => {
+    const el = e.target;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  /**
+   * Handles quick reply chip click.
+   * @param {string} text - Quick reply text
+   */
+  const handleQuickReply = useCallback((text) => {
+    sendMessage(text);
+  }, [sendMessage]);
+
+  /** @type {boolean} Whether the send button should be disabled */
+  const isSendDisabled = !input.trim();
+
+  /** @type {boolean} Whether quick replies should be shown */
+  const showQuickReplies = messages.length <= 2;
+
   return (
     <div className="page-enter flex flex-col" style={{ minHeight: 'calc(100vh - 8rem)' }}>
       {/* Header Card */}
@@ -92,13 +143,14 @@ function Chat() {
 
       {/* Messages Area */}
       <div
+        ref={messagesRef}
         className="flex-1 overflow-y-auto no-scrollbar bg-surface1 border border-surface3 rounded-2xl p-4 mb-4 shadow-card flex flex-col gap-4 min-h-64"
         role="log"
         aria-label="Conversation with CarbonSaathi AI"
         aria-live="polite"
         aria-relevant="additions"
       >
-        {chatSeedMessages.map((message) => (
+        {messages.map((message) => (
           <ChatBubble
             key={message.id}
             role={message.role}
@@ -106,41 +158,78 @@ function Chat() {
             timestamp={message.timestamp}
           />
         ))}
+
+        {/* Typing indicator */}
+        {isTyping && (
+          <div className="self-start max-w-xs sm:max-w-sm flex items-start gap-2.5">
+            <div
+              className="w-8 h-8 rounded-xl bg-green-gradient flex items-center justify-center text-base flex-shrink-0"
+              aria-hidden="true"
+            >
+              🌱
+            </div>
+            <div className="bg-surface1 border border-surface3 rounded-2xl rounded-bl-none px-4 py-3 shadow-card">
+              <span
+                className="flex gap-1 items-center py-1"
+                role="status"
+                aria-label="CarbonSaathi AI is typing"
+              >
+                {TYPING_DOTS.map((index) => (
+                  <span
+                    key={index}
+                    className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                  />
+                ))}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Reply Chips */}
       <div
-        className="flex flex-wrap gap-2 mb-4"
+        className={`flex flex-wrap gap-2 mb-4 transition-opacity duration-300 ${
+          showQuickReplies
+            ? ''
+            : 'opacity-0 pointer-events-none h-0 mb-0 overflow-hidden'
+        }`}
         role="group"
         aria-label="Suggested questions"
       >
         {QUICK_REPLIES.map((question) => (
-          <button
+          <QuickReplyChip
             key={question}
-            type="button"
-            tabIndex={0}
+            text={question}
             onClick={handleQuickReply}
-            className="bg-surface1 border border-surface3 hover:border-primary hover:bg-surface2 text-xs text-muted hover:text-dark rounded-xl px-3 py-2 cursor-pointer transition-all duration-150 font-medium font-sans"
-          >
-            {question}
-          </button>
+          />
         ))}
       </div>
 
       {/* Input Bar */}
       <div className="bg-surface1 border border-surface3 rounded-2xl p-3 flex gap-3 items-end shadow-card">
         <textarea
+          ref={textareaRef}
           className="flex-1 bg-transparent outline-none text-sm text-dark placeholder-muted resize-none leading-relaxed font-sans"
           style={{ minHeight: '2.5rem', maxHeight: '8rem' }}
           aria-label="Message CarbonSaathi AI"
           aria-multiline="true"
           placeholder="Ask about reducing your carbon footprint..."
           rows={1}
+          value={input}
+          onChange={handleInputChange}
+          onInput={handleTextareaResize}
+          onKeyDown={handleKeyDown}
         />
         <button
           type="button"
-          onClick={handleSend}
-          className="w-10 h-10 rounded-xl flex-shrink-0 bg-primary hover:bg-primary/90 flex items-center justify-center transition-colors duration-150"
+          onClick={sendMessage}
+          disabled={isSendDisabled}
+          className={`w-10 h-10 rounded-xl flex-shrink-0 bg-primary flex items-center justify-center transition-colors duration-150 ${
+            isSendDisabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-primary/90'
+          }`}
           aria-label="Send message"
         >
           <SendHorizontal
@@ -152,5 +241,38 @@ function Chat() {
     </div>
   );
 }
+
+/**
+ * Individual quick reply chip button.
+ * Extracted to avoid inline functions in the parent JSX.
+ * @param {object} props - Component props
+ * @param {string} props.text - Chip label text
+ * @param {Function} props.onClick - Click handler receiving text
+ * @returns {React.ReactElement} Rendered chip button
+ */
+function QuickReplyChip({ text, onClick }) {
+  const handleClick = useCallback(() => {
+    onClick(text);
+  }, [onClick, text]);
+
+  return (
+    <button
+      type="button"
+      tabIndex={0}
+      onClick={handleClick}
+      className="bg-surface1 border border-surface3 hover:border-primary hover:bg-surface2 text-xs text-muted hover:text-dark rounded-xl px-3 py-2 cursor-pointer transition-all duration-150 font-medium font-sans"
+    >
+      {text}
+    </button>
+  );
+}
+
+
+QuickReplyChip.propTypes = {
+  /** Chip label text */
+  text: PropTypes.string.isRequired,
+  /** Click handler receiving text */
+  onClick: PropTypes.func.isRequired,
+};
 
 export default Chat;

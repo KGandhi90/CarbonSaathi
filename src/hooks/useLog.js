@@ -15,6 +15,7 @@ import {
   clampValue,
 } from '../utils/carbonCalc';
 import { trackEvent } from '../utils/analytics';
+import { saveActivityLog } from '../api/firebase';
 
 /**
  * Manages the Log Activity page form state.
@@ -129,7 +130,6 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
    */
   const saveLog = useCallback(() => {
     const entry = {
-      timestamp: new Date().toISOString(),
       transport: transportCO2,
       food: foodCO2,
       energy: energyCO2,
@@ -137,9 +137,8 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
       total: totalCO2,
     };
 
-    // Will be saved to Firebase in Phase 3
-    // eslint-disable-next-line no-console
-    console.warn('Log entry ready:', entry);
+    // Save to Firestore (non-blocking)
+    saveActivityLog(entry);
 
     trackEvent('Log', 'ActivitySaved', `Total: ${totalCO2} kg`);
 

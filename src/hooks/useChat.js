@@ -1,16 +1,16 @@
 /**
  * @fileoverview Manages chat state and AI responses.
- * Uses mock replies now, Gemini in Phase 3.
+ * Uses Gemini API with mock fallback.
  * @module hooks/useChat
  */
 
 import { useState, useCallback } from 'react';
-import { getMockReply } from '../utils/helpers';
+import { sendToGemini } from '../api/geminiApi';
 import { trackEvent } from '../utils/analytics';
 
 /**
  * Manages chat state and AI responses.
- * Uses mock replies now, Gemini API in Phase 3.
+ * Uses Gemini API with mock reply fallback.
  * @param {Array<{ id: number, role: string, content: string, timestamp: string }>} seedMessages - Initial messages
  * @returns {object} Chat state, input, actions
  */
@@ -19,13 +19,16 @@ export function useChat(seedMessages) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState(null);
+  const [apiHistory, setApiHistory] = useState([]);
 
   /**
-   * Sends a user message and triggers mock AI reply.
+   * Sends a user message and triggers Gemini AI reply.
+   * Guards against receiving React events as overrideText.
    * @param {string} [overrideText] - Quick reply text (bypasses input state)
    */
-  const sendMessage = useCallback((overrideText) => {
-    const text = (overrideText || input).trim();
+  const sendMessage = useCallback(async (overrideText) => {
+    // Guard: ignore React SyntheticEvent objects passed by onClick
+    const text = (typeof overrideText === 'string' ? overrideText : input).trim();
     if (!text) return;
 
     setError(null);
@@ -46,25 +49,39 @@ export function useChat(seedMessages) {
 
     trackEvent(
       'Chat',
-      overrideText ? 'QuickReplyUsed' : 'MessageSent',
-      overrideText || undefined
+      typeof overrideText === 'string' ? 'QuickReplyUsed' : 'MessageSent',
+      typeof overrideText === 'string' ? overrideText : undefined
     );
 
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      const reply = await sendToGemini(text, apiHistory);
+
       /** @type {{ id: number, role: string, content: string, timestamp: string }} */
       const aiMsg = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: getMockReply(text),
+        content: reply,
         timestamp: new Date().toLocaleTimeString(
           [], { hour: '2-digit', minute: '2-digit' }
         ),
       };
+
       setMessages((prev) => [...prev, aiMsg]);
+
+      // Update history for multi-turn context
+      setApiHistory((prev) => [
+        ...prev,
+        { role: 'user', content: text },
+        { role: 'model', content: reply },
+      ]);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('Chat error:', err);
+      setError('Having trouble connecting. Try again in a moment.');
+    } finally {
       setIsTyping(false);
-    }, 1200);
-  }, [input]);
+    }
+  }, [input, apiHistory]);
 
   /**
    * Handles Enter key to send message.

@@ -43,6 +43,7 @@ function Chat() {
     messages,
     input,
     isTyping,
+    error,
     setInput,
     sendMessage,
     handleKeyDown,
@@ -182,6 +183,18 @@ function Chat() {
                   />
                 ))}
               </span>
+            </div>
+          </div>
+        )}
+
+        {/* Error bubble */}
+        {error && (
+          <div className="self-start max-w-xs sm:max-w-sm">
+            <div
+              className="border-l-4 border-l-coral bg-coral/5 rounded-2xl rounded-bl-none px-4 py-3"
+              role="alert"
+            >
+              <p className="text-sm text-coral font-medium">{error}</p>
             </div>
           </div>
         )}

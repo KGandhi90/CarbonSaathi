@@ -44,9 +44,9 @@ try {
     db = getFirestore(app);
     auth = getAuth(app);
 
-    // App Check — reCAPTCHA v3
+    // App Check — reCAPTCHA v3 (production only; localhost is not a registered domain)
     const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-    if (recaptchaKey) {
+    if (recaptchaKey && !import.meta.env.DEV) {
       initializeAppCheck(app, {
         provider: new ReCaptchaV3Provider(recaptchaKey),
         isTokenAutoRefreshEnabled: true,

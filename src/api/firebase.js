@@ -12,7 +12,6 @@ import {
   getDocs,
   query,
   orderBy,
-  where,
   limit,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -77,20 +76,6 @@ async function ensureAuth() {
 }
 
 /**
- * Checks if a given date is today.
- * @param {Date} date - Date to check
- * @returns {boolean} True if the date is today
- */
-function isToday(date) {
-  const today = new Date();
-  return (
-    date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear()
-  );
-}
-
-/**
  * Saves a daily activity log to Firestore.
  * Stored anonymously — zero personal data.
  * @param {object} logEntry - Activity log data
@@ -117,13 +102,15 @@ export async function saveActivityLog(logEntry) {
 }
 
 /**
- * Fetches recent activity logs for trend data.
- * Limited to last 30 entries for performance.
+ * Fetches the most recent 30 activity logs, ordered by newest first.
+ * All date-based filtering (today, weekly, monthly) is done client-side
+ * in useDashboard to avoid requiring Firestore composite indexes.
  * @returns {Promise<Array<object>>} Array of log objects
  */
 export async function getRecentLogs() {
   if (!db) return [];
   try {
+    await ensureAuth();
     const q = query(
       collection(db, 'activityLogs'),
       orderBy('timestamp', 'desc'),
@@ -138,124 +125,5 @@ export async function getRecentLogs() {
     // eslint-disable-next-line no-console
     console.warn('Log fetch failed:', err);
     return [];
-  }
-}
-
-/**
- * Fetches today's most recent activity log from Firestore.
- * @returns {Promise<object|null>} Today's log or null if none exists
- */
-export async function getTodayLog() {
-  if (!db) return null;
-  try {
-    await ensureAuth();
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const { Timestamp } = await import('firebase/firestore');
-
-    const q = query(
-      collection(db, 'activityLogs'),
-      where('timestamp', '>=', Timestamp.fromDate(startOfDay)),
-      orderBy('timestamp', 'desc'),
-      limit(1)
-    );
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
-    return {
-      id: snapshot.docs[0].id,
-      ...snapshot.docs[0].data(),
-    };
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('getTodayLog failed:', err);
-    return null;
-  }
-}
-
-/**
- * Fetches logs for the last 7 days from Firestore for the weekly chart.
- * Returns one entry per day (most recent log per day if multiple exist).
- * @returns {Promise<Array<object>>} Array of daily log summaries
- */
-export async function getWeeklyLogs() {
-  if (!db) return [];
-  try {
-    await ensureAuth();
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-
-    const { Timestamp } = await import('firebase/firestore');
-
-    const q = query(
-      collection(db, 'activityLogs'),
-      where('timestamp', '>=', Timestamp.fromDate(sevenDaysAgo)),
-      orderBy('timestamp', 'desc'),
-      limit(50)
-    );
-    const snapshot = await getDocs(q);
-
-    // Group by date — keep most recent per day
-    const byDate = {};
-    snapshot.docs.forEach((doc) => {
-      const data = doc.data();
-      // Firestore Timestamp → JS Date
-      const date = data.timestamp?.toDate
-        ? data.timestamp.toDate()
-        : new Date(data.timestamp);
-      const dateKey = date
-        .toLocaleDateString('en-IN', { weekday: 'short' })
-        .slice(0, 3); // "Mon", "Tue" etc
-
-      // Only keep most recent per day
-      if (!byDate[dateKey]) {
-        byDate[dateKey] = {
-          day: dateKey,
-          value: data.total || 0,
-          isToday: isToday(date),
-        };
-      }
-    });
-
-    return Object.values(byDate);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('getWeeklyLogs failed:', err);
-    return [];
-  }
-}
-
-/**
- * Fetches this month's total CO₂ from Firestore.
- * @returns {Promise<number>} Monthly total in kg CO₂
- */
-export async function getMonthlyTotal() {
-  if (!db) return 0;
-  try {
-    await ensureAuth();
-
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-
-    const { Timestamp } = await import('firebase/firestore');
-
-    const q = query(
-      collection(db, 'activityLogs'),
-      where('timestamp', '>=', Timestamp.fromDate(startOfMonth)),
-      orderBy('timestamp', 'desc')
-    );
-    const snapshot = await getDocs(q);
-
-    return snapshot.docs.reduce((sum, doc) => {
-      return sum + (doc.data().total || 0);
-    }, 0);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('getMonthlyTotal failed:', err);
-    return 0;
   }
 }

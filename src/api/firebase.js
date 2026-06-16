@@ -16,7 +16,6 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously } from 'firebase/auth';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 /**
  * Firebase configuration pulled from environment variables.
@@ -43,15 +42,6 @@ try {
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     auth = getAuth(app);
-
-    // App Check — reCAPTCHA v3 (production only; localhost is not a registered domain)
-    const recaptchaKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-    if (recaptchaKey && !import.meta.env.DEV) {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(recaptchaKey),
-        isTokenAutoRefreshEnabled: true,
-      });
-    }
   }
 } catch (err) {
   // eslint-disable-next-line no-console

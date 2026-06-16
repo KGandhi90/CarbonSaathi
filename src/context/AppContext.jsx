@@ -1,6 +1,7 @@
 /**
- * @fileoverview Global application context providing static mock data.
+ * @fileoverview Global application context providing static configuration data.
  * Mutable state lives in individual page hooks.
+ * weeklyData and todayBreakdown are now provided by useDashboard (real-time).
  * @module context/AppContext
  */
 
@@ -10,7 +11,6 @@ import {
   transportModes,
   foodTypes,
   shoppingTypes,
-  weeklyData,
   chatSeedMessages,
   userProfile,
 } from '../data/mockData';
@@ -20,7 +20,6 @@ import {
  * @property {Array} transportModes - Transport mode options
  * @property {Array} foodTypes - Food type options
  * @property {Array} shoppingTypes - Shopping category options
- * @property {Array} weeklyData - Weekly emission data
  * @property {Array} chatSeedMessages - Initial chat messages
  * @property {Object} userProfile - User profile data
  */
@@ -29,7 +28,8 @@ import {
 const AppContext = createContext(null);
 
 /**
- * Provides global static data to the component tree.
+ * Provides global static configuration data to the component tree.
+ * Chart and emission data are now fetched live via useDashboard.
  * @param {object} props - Component props
  * @param {React.ReactNode} props.children - Child components
  * @returns {React.ReactElement} Context provider wrapper
@@ -39,7 +39,6 @@ export function AppProvider({ children }) {
     transportModes,
     foodTypes,
     shoppingTypes,
-    weeklyData,
     chatSeedMessages,
     userProfile,
   }), []);

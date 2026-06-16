@@ -1,6 +1,7 @@
 /**
- * @fileoverview Firebase integration — Firestore, Auth, App Check.
- * Stores activity logs anonymously. Zero personal data collected.
+ * @fileoverview Firebase integration — Firestore and Anonymous Auth.
+ * All logs are scoped to the user's own UID under users/{uid}/activityLogs.
+ * Zero personal data collected — users are identified only by Firebase UID.
  * @module api/firebase
  */
 
@@ -66,15 +67,26 @@ async function ensureAuth() {
 }
 
 /**
- * Saves a daily activity log to Firestore.
- * Stored anonymously — zero personal data.
+ * Returns the Firestore collection path scoped to the current user's UID.
+ * Path: users/{uid}/activityLogs
+ * Each user can only access their own subcollection.
+ * @returns {import('firebase/firestore').CollectionReference|null}
+ */
+function userLogsCollection() {
+  if (!db || !auth?.currentUser) return null;
+  return collection(db, 'users', auth.currentUser.uid, 'activityLogs');
+}
+
+/**
+ * Saves a daily activity log to the current user's Firestore subcollection.
+ * Stored by UID only — zero personal data.
  * @param {object} logEntry - Activity log data
  * @param {number} logEntry.transport - Transport emissions in kg CO₂
  * @param {number} logEntry.food - Food emissions in kg CO₂
  * @param {number} logEntry.energy - Energy emissions in kg CO₂
  * @param {number} logEntry.shopping - Shopping emissions in kg CO₂
  * @param {number} logEntry.total - Total emissions in kg CO₂
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>} True if saved successfully
  */
 export async function saveActivityLog(logEntry) {
   if (!db) {
@@ -84,10 +96,15 @@ export async function saveActivityLog(logEntry) {
   }
   try {
     await ensureAuth();
-    await addDoc(collection(db, 'activityLogs'), {
+    const col = userLogsCollection();
+    if (!col) {
+      // eslint-disable-next-line no-console
+      console.warn('saveActivityLog: Auth not ready — could not get user UID.');
+      return false;
+    }
+    await addDoc(col, {
       ...logEntry,
       timestamp: serverTimestamp(),
-      city: 'Mumbai',
     });
     return true;
   } catch (err) {
@@ -98,20 +115,19 @@ export async function saveActivityLog(logEntry) {
 }
 
 /**
- * Fetches the most recent 30 activity logs, ordered by newest first.
- * All date-based filtering (today, weekly, monthly) is done client-side
- * in useDashboard to avoid requiring Firestore composite indexes.
- * @returns {Promise<Array<object>>} Array of log objects
+ * Fetches the most recent 30 logs for the current user only.
+ * Scoped to users/{uid}/activityLogs — other users cannot access this data.
+ * All date filtering (today / weekly / monthly) is done client-side
+ * to avoid requiring Firestore composite indexes.
+ * @returns {Promise<Array<object>>} Array of the current user's log objects
  */
 export async function getRecentLogs() {
   if (!db) return [];
   try {
     await ensureAuth();
-    const q = query(
-      collection(db, 'activityLogs'),
-      orderBy('timestamp', 'desc'),
-      limit(30)
-    );
+    const col = userLogsCollection();
+    if (!col) return [];
+    const q = query(col, orderBy('timestamp', 'desc'), limit(30));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -119,7 +135,7 @@ export async function getRecentLogs() {
     }));
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('Log fetch failed:', err);
+    console.warn('Log fetch failed:', err.code, err.message);
     return [];
   }
 }

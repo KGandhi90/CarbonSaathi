@@ -47,6 +47,7 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
   // UI state
   const [isSaved, setIsSaved] = useState(false);
   const [saveToast, setSaveToast] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Derived CO₂ values — recalculated only when inputs change
   /** @type {number} Transport emissions in kg CO₂ */
@@ -125,10 +126,14 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
   }, []);
 
   /**
-   * Saves the activity log entry.
-   * Shows toast and fires GA event.
+   * Saves the activity log entry to Firestore.
+   * Awaits the result and shows an error toast if Firebase rejects the write.
+   * @returns {Promise<void>}
    */
-  const saveLog = useCallback(() => {
+  const saveLog = useCallback(async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+
     const entry = {
       transport: transportCO2,
       food: foodCO2,
@@ -137,17 +142,20 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
       total: totalCO2,
     };
 
-    // Save to Firestore (non-blocking)
-    saveActivityLog(entry);
+    const success = await saveActivityLog(entry);
 
-    trackEvent('Log', 'ActivitySaved', `Total: ${totalCO2} kg`);
+    if (success) {
+      trackEvent('Log', 'ActivitySaved', `Total: ${totalCO2} kg`);
+      setSaveToast(`Logged! Your CO₂ today: ${formatCO2(totalCO2)} kg 🌱`);
+      setIsSaved(true);
+    } else {
+      setSaveToast('⚠️ Could not save to Firebase. Check Firestore rules in Firebase Console.');
+    }
 
-    setSaveToast(`Logged! Your CO₂ today: ${formatCO2(totalCO2)} kg 🌱`);
-    setIsSaved(true);
-
-    // Auto-dismiss toast after 3s
-    setTimeout(() => setSaveToast(null), 3000);
-  }, [transportCO2, foodCO2, energyCO2, shoppingCO2, totalCO2]);
+    setIsSaving(false);
+    // Auto-dismiss toast after 5s
+    setTimeout(() => setSaveToast(null), 5000);
+  }, [isSaving, transportCO2, foodCO2, energyCO2, shoppingCO2, totalCO2]);
 
   return {
     // State

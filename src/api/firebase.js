@@ -87,7 +87,11 @@ async function ensureAuth() {
  * @returns {Promise<void>}
  */
 export async function saveActivityLog(logEntry) {
-  if (!db) return;
+  if (!db) {
+    // eslint-disable-next-line no-console
+    console.warn('saveActivityLog: Firestore not initialized. Check VITE_FIREBASE_* env vars.');
+    return false;
+  }
   try {
     await ensureAuth();
     await addDoc(collection(db, 'activityLogs'), {
@@ -95,9 +99,11 @@ export async function saveActivityLog(logEntry) {
       timestamp: serverTimestamp(),
       city: 'Mumbai',
     });
+    return true;
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('Log save failed:', err);
+    console.warn('saveActivityLog failed — check Firestore rules:', err.code, err.message);
+    return false;
   }
 }
 

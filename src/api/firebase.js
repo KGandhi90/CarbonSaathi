@@ -9,7 +9,8 @@ import { initializeApp } from 'firebase/app';
 import {
   getFirestore,
   collection,
-  addDoc,
+  doc,
+  setDoc,
   getDocs,
   query,
   orderBy,
@@ -78,8 +79,23 @@ function userLogsCollection() {
 }
 
 /**
- * Saves a daily activity log to the current user's Firestore subcollection.
- * Stored by UID only — zero personal data.
+ * Returns today's date as an ISO date string (e.g. "2026-06-17").
+ * Used as the Firestore document ID so only one log exists per day.
+ * @returns {string} Date string in YYYY-MM-DD format
+ */
+function todayDateKey() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Saves (or overwrites) today's activity log in the user's subcollection.
+ * Uses the date as the document ID (e.g. "2026-06-17") so that
+ * logging a second time on the same day replaces the previous entry
+ * instead of creating a duplicate.
  * @param {object} logEntry - Activity log data
  * @param {number} logEntry.transport - Transport emissions in kg CO₂
  * @param {number} logEntry.food - Food emissions in kg CO₂
@@ -102,7 +118,8 @@ export async function saveActivityLog(logEntry) {
       console.warn('saveActivityLog: Auth not ready — could not get user UID.');
       return false;
     }
-    await addDoc(col, {
+    const docRef = doc(col, todayDateKey());
+    await setDoc(docRef, {
       ...logEntry,
       timestamp: serverTimestamp(),
     });

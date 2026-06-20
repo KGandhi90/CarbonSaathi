@@ -26,74 +26,82 @@ export function useChat(seedMessages) {
    * Guards against receiving React events as overrideText.
    * @param {string} [overrideText] - Quick reply text (bypasses input state)
    */
-  const sendMessage = useCallback(async (overrideText) => {
-    // Guard: ignore React SyntheticEvent objects passed by onClick
-    const text = (typeof overrideText === 'string' ? overrideText : input).trim();
-    if (!text) return;
+  const sendMessage = useCallback(
+    async (overrideText) => {
+      // Guard: ignore React SyntheticEvent objects passed by onClick
+      const text = (typeof overrideText === 'string' ? overrideText : input).trim();
+      if (!text) return;
 
-    setError(null);
-
-    /** @type {{ id: number, role: string, content: string, timestamp: string }} */
-    const userMsg = {
-      id: Date.now(),
-      role: 'user',
-      content: text,
-      timestamp: new Date().toLocaleTimeString(
-        [], { hour: '2-digit', minute: '2-digit' }
-      ),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setIsTyping(true);
-
-    trackEvent(
-      'Chat',
-      typeof overrideText === 'string' ? 'QuickReplyUsed' : 'MessageSent',
-      typeof overrideText === 'string' ? overrideText : undefined
-    );
-
-    try {
-      const reply = await sendToGemini(text, apiHistory);
+      setError(null);
 
       /** @type {{ id: number, role: string, content: string, timestamp: string }} */
-      const aiMsg = {
-        id: Date.now() + 1,
-        role: 'assistant',
-        content: reply,
-        timestamp: new Date().toLocaleTimeString(
-          [], { hour: '2-digit', minute: '2-digit' }
-        ),
+      const userMsg = {
+        id: Date.now(),
+        role: 'user',
+        content: text,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       };
 
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [...prev, userMsg]);
+      setInput('');
+      setIsTyping(true);
 
-      // Update history for multi-turn context
-      setApiHistory((prev) => [
-        ...prev,
-        { role: 'user', content: text },
-        { role: 'model', content: reply },
-      ]);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn('Chat error:', err);
-      setError('Having trouble connecting. Try again in a moment.');
-    } finally {
-      setIsTyping(false);
-    }
-  }, [input, apiHistory]);
+      trackEvent(
+        'Chat',
+        typeof overrideText === 'string' ? 'QuickReplyUsed' : 'MessageSent',
+        typeof overrideText === 'string' ? overrideText : undefined
+      );
+
+      try {
+        const reply = await sendToGemini(text, apiHistory);
+
+        /** @type {{ id: number, role: string, content: string, timestamp: string }} */
+        const aiMsg = {
+          id: Date.now() + 1,
+          role: 'assistant',
+          content: reply,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        };
+
+        setMessages((prev) => [...prev, aiMsg]);
+
+        // Update history for multi-turn context
+        setApiHistory((prev) => [
+          ...prev,
+          { role: 'user', content: text },
+          { role: 'model', content: reply },
+        ]);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Chat error:', err);
+        setError('Having trouble connecting. Try again in a moment.');
+      } finally {
+        setIsTyping(false);
+      }
+    },
+    [input, apiHistory]
+  );
 
   /**
    * Handles Enter key to send message.
    * Shift+Enter adds newline instead.
    * @param {React.KeyboardEvent<HTMLTextAreaElement>} e - Keyboard event
    */
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }, [sendMessage]);
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    },
+    [sendMessage]
+  );
 
   return {
     messages,

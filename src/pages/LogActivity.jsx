@@ -1,20 +1,25 @@
 /**
  * @fileoverview Log Activity page — track daily carbon emissions.
- * Contains sections for Transport, Food, Energy, and Shopping.
- * All calculations handled by useLog hook.
+ * Displays the activity logging form across 4 categories:
+ * Transport, Food, Energy, and Shopping. Calculates CO₂ emissions
+ * live as the user fills in each field, then saves the entry to Firestore.
+ * Uses ToggleGroup and Stepper components to eliminate markup duplication.
  * @module pages/LogActivity
  */
 
 import { useCallback, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import ActivitySection from '../components/ActivitySection';
+import { ToggleGroup } from '../components/ToggleGroup';
+import { Stepper } from '../components/Stepper';
 import { useAppContext } from '../context/AppContext';
 import { useLog } from '../hooks/useLog';
 import { formatCO2 } from '../utils/carbonCalc';
+import { INPUT_LIMITS } from '../utils/constants';
 
 /**
  * Log Activity page component.
+ * Renders the 4-category activity logging form with live CO₂ calculation.
  * @returns {React.ReactElement} Rendered log activity page
  */
 function LogActivity() {
@@ -24,19 +29,33 @@ function LogActivity() {
   const headingRef = useRef(null);
 
   const {
-    transportMode, transportKm,
-    foodType, foodMeals,
-    acHours, appHours, renewable,
-    shoppingType, shoppingSpend,
-    saveToast, isSaved,
-    transportCO2, foodCO2,
-    energyCO2, shoppingCO2, totalCO2,
-    setTransportMode, setTransportKm,
-    setFoodType, setFoodMeals,
-    setAcHours, setAppHours, setRenewable,
-    setShoppingType, setShoppingSpend,
-    increment, decrement,
-    handleNumericInput, saveLog,
+    transportMode,
+    transportKm,
+    foodType,
+    foodMeals,
+    acHours,
+    appHours,
+    renewable,
+    shoppingType,
+    shoppingSpend,
+    saveToast,
+    isSaved,
+    transportCO2,
+    foodCO2,
+    energyCO2,
+    shoppingCO2,
+    totalCO2,
+    setTransportMode,
+    setTransportKm,
+    setFoodType,
+    setFoodMeals,
+    setAcHours,
+    setAppHours,
+    setRenewable,
+    setShoppingType,
+    setShoppingSpend,
+    handleNumericInput,
+    saveLog,
   } = useLog({ transportModes, foodTypes, shoppingTypes });
 
   // Focus heading on mount for accessibility
@@ -59,148 +78,27 @@ function LogActivity() {
   }, [isSaved, saveToast, navigate]);
 
   /**
-   * Handles transport mode selection.
-   * @param {string} modeId - Selected mode id
+   * Handles renewable energy checkbox toggle.
    */
-  const handleTransportModeSelect = useCallback((modeId) => {
-    setTransportMode(modeId);
-  }, [setTransportMode]);
-
-  /**
-   * Handles food type selection.
-   * @param {string} typeId - Selected food type id
-   */
-  const handleFoodTypeSelect = useCallback((typeId) => {
-    setFoodType(typeId);
-  }, [setFoodType]);
-
-  /**
-   * Handles shopping type selection.
-   * @param {string} typeId - Selected shopping type id
-   */
-  const handleShoppingTypeSelect = useCallback((typeId) => {
-    setShoppingType(typeId);
-  }, [setShoppingType]);
-
-  /**
-   * Handles keyboard navigation for transport radio group.
-   * @param {React.KeyboardEvent} e - Keyboard event
-   */
-  const handleTransportKeyDown = useCallback((e) => {
-    const currentIndex = transportModes.findIndex((m) => m.id === transportMode);
-    let nextIndex = currentIndex;
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      nextIndex = (currentIndex + 1) % transportModes.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      nextIndex = (currentIndex - 1 + transportModes.length) % transportModes.length;
-    }
-
-    if (nextIndex !== currentIndex) {
-      setTransportMode(transportModes[nextIndex].id);
-    }
-  }, [transportMode, transportModes, setTransportMode]);
-
-  /**
-   * Handles keyboard navigation for food radio group.
-   * @param {React.KeyboardEvent} e - Keyboard event
-   */
-  const handleFoodKeyDown = useCallback((e) => {
-    const currentIndex = foodTypes.findIndex((t) => t.id === foodType);
-    let nextIndex = currentIndex;
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      nextIndex = (currentIndex + 1) % foodTypes.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      nextIndex = (currentIndex - 1 + foodTypes.length) % foodTypes.length;
-    }
-
-    if (nextIndex !== currentIndex) {
-      setFoodType(foodTypes[nextIndex].id);
-    }
-  }, [foodType, foodTypes, setFoodType]);
-
-  /**
-   * Handles keyboard navigation for shopping radio group.
-   * @param {React.KeyboardEvent} e - Keyboard event
-   */
-  const handleShoppingKeyDown = useCallback((e) => {
-    const currentIndex = shoppingTypes.findIndex((t) => t.id === shoppingType);
-    let nextIndex = currentIndex;
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      nextIndex = (currentIndex + 1) % shoppingTypes.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      nextIndex = (currentIndex - 1 + shoppingTypes.length) % shoppingTypes.length;
-    }
-
-    if (nextIndex !== currentIndex) {
-      setShoppingType(shoppingTypes[nextIndex].id);
-    }
-  }, [shoppingType, shoppingTypes, setShoppingType]);
-
-  // Stepper handlers — useCallback wrappers to avoid inline functions
-  const handleTransportKmUp = useCallback(() => {
-    increment(setTransportKm, transportKm, 500);
-  }, [increment, setTransportKm, transportKm]);
-
-  const handleTransportKmDown = useCallback(() => {
-    decrement(setTransportKm, transportKm, 0);
-  }, [decrement, setTransportKm, transportKm]);
-
-  const handleTransportKmInput = useCallback((e) => {
-    handleNumericInput(e, setTransportKm, 0, 500);
-  }, [handleNumericInput, setTransportKm]);
-
-  const handleFoodMealsUp = useCallback(() => {
-    increment(setFoodMeals, foodMeals, 5);
-  }, [increment, setFoodMeals, foodMeals]);
-
-  const handleFoodMealsDown = useCallback(() => {
-    decrement(setFoodMeals, foodMeals, 1);
-  }, [decrement, setFoodMeals, foodMeals]);
-
-  const handleFoodMealsInput = useCallback((e) => {
-    handleNumericInput(e, setFoodMeals, 1, 5);
-  }, [handleNumericInput, setFoodMeals]);
-
-  const handleAcUp = useCallback(() => {
-    increment(setAcHours, acHours, 24);
-  }, [increment, setAcHours, acHours]);
-
-  const handleAcDown = useCallback(() => {
-    decrement(setAcHours, acHours, 0);
-  }, [decrement, setAcHours, acHours]);
-
-  const handleAcInput = useCallback((e) => {
-    handleNumericInput(e, setAcHours, 0, 24);
-  }, [handleNumericInput, setAcHours]);
-
-  const handleAppUp = useCallback(() => {
-    increment(setAppHours, appHours, 24);
-  }, [increment, setAppHours, appHours]);
-
-  const handleAppDown = useCallback(() => {
-    decrement(setAppHours, appHours, 0);
-  }, [decrement, setAppHours, appHours]);
-
-  const handleAppInput = useCallback((e) => {
-    handleNumericInput(e, setAppHours, 0, 24);
-  }, [handleNumericInput, setAppHours]);
-
   const handleRenewableToggle = useCallback(() => {
     setRenewable((prev) => !prev);
   }, [setRenewable]);
 
-  const handleSpendInput = useCallback((e) => {
-    handleNumericInput(e, setShoppingSpend, 0, 999999);
-  }, [handleNumericInput, setShoppingSpend]);
+  /**
+   * Handles shopping spend direct input with sanitization.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event
+   */
+  const handleSpendInput = useCallback(
+    (e) => {
+      handleNumericInput(
+        e,
+        setShoppingSpend,
+        INPUT_LIMITS.SPEND_MIN,
+        INPUT_LIMITS.SPEND_MAX
+      );
+    },
+    [handleNumericInput, setShoppingSpend]
+  );
 
   return (
     <div className="page-enter space-y-5">
@@ -213,9 +111,7 @@ function LogActivity() {
         >
           Log Activity
         </h1>
-        <p className="font-sans text-sm text-muted mt-1">
-          Track what you did today
-        </p>
+        <p className="font-sans text-sm text-muted mt-1">Track what you did today</p>
       </header>
 
       {/* Live CO₂ Counter */}
@@ -254,30 +150,15 @@ function LogActivity() {
       </div>
 
       {/* Transport Section */}
-      <ActivitySection
-        title="Transport"
-        color="amber"
-        icon="Car"
-        subtotal={transportCO2}
-      >
-        {/* Mode toggle group */}
-        <div
-          className="flex flex-wrap gap-2 mb-4"
-          role="radiogroup"
-          aria-label="Select transport mode"
-          onKeyDown={handleTransportKeyDown}
-        >
-          {transportModes.map((mode) => (
-            <RadioButton
-              key={mode.id}
-              id={mode.id}
-              label={mode.label}
-              isSelected={mode.id === transportMode}
-              onSelect={handleTransportModeSelect}
-              activeClass="bg-amber text-white"
-              inactiveClass="bg-surface2 text-muted hover:bg-amber/10 hover:text-amber"
-            />
-          ))}
+      <ActivitySection title="Transport" color="amber" icon="Car" subtotal={transportCO2}>
+        <div className="mb-4">
+          <ToggleGroup
+            options={transportModes}
+            selected={transportMode}
+            onChange={setTransportMode}
+            activeColor="amber"
+            ariaLabel="Select transport mode"
+          />
         </div>
 
         {/* Distance input */}
@@ -285,34 +166,14 @@ function LogActivity() {
           <label htmlFor="transport-distance" className="text-xs text-muted">
             Distance (km)
           </label>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-              aria-label="Decrease distance"
-              onClick={handleTransportKmDown}
-            >
-              −
-            </button>
-            <input
-              id="transport-distance"
-              type="number"
-              min="0"
-              max="500"
-              value={transportKm}
-              onChange={handleTransportKmInput}
-              className="w-20 text-center font-mono text-lg text-dark bg-surface2 rounded-xl px-2 py-2 border border-surface3"
-              aria-label="Distance in kilometers"
-            />
-            <button
-              type="button"
-              className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-              aria-label="Increase distance"
-              onClick={handleTransportKmUp}
-            >
-              +
-            </button>
-          </div>
+          <Stepper
+            value={transportKm}
+            onChange={setTransportKm}
+            min={INPUT_LIMITS.TRANSPORT_KM_MIN}
+            max={INPUT_LIMITS.TRANSPORT_KM_MAX}
+            label="Distance in kilometers"
+            unit="km"
+          />
         </div>
 
         {/* CO₂ result */}
@@ -322,30 +183,15 @@ function LogActivity() {
       </ActivitySection>
 
       {/* Food Section */}
-      <ActivitySection
-        title="Food"
-        color="secondary"
-        icon="Leaf"
-        subtotal={foodCO2}
-      >
-        {/* Food type toggle */}
-        <div
-          className="flex flex-wrap gap-2 mb-4"
-          role="radiogroup"
-          aria-label="Select food type"
-          onKeyDown={handleFoodKeyDown}
-        >
-          {foodTypes.map((food) => (
-            <RadioButton
-              key={food.id}
-              id={food.id}
-              label={food.label}
-              isSelected={food.id === foodType}
-              onSelect={handleFoodTypeSelect}
-              activeClass="bg-secondary text-white"
-              inactiveClass="bg-surface2 text-muted hover:bg-secondary/10 hover:text-secondary"
-            />
-          ))}
+      <ActivitySection title="Food" color="secondary" icon="Leaf" subtotal={foodCO2}>
+        <div className="mb-4">
+          <ToggleGroup
+            options={foodTypes}
+            selected={foodType}
+            onChange={setFoodType}
+            activeColor="secondary"
+            ariaLabel="Select food type"
+          />
         </div>
 
         {/* Meals stepper */}
@@ -353,78 +199,31 @@ function LogActivity() {
           <label htmlFor="food-meals" className="text-xs text-muted">
             Number of meals
           </label>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-              aria-label="Decrease meals"
-              onClick={handleFoodMealsDown}
-            >
-              −
-            </button>
-            <input
-              id="food-meals"
-              type="number"
-              min="1"
-              max="5"
-              value={foodMeals}
-              onChange={handleFoodMealsInput}
-              className="w-20 text-center font-mono text-lg text-dark bg-surface2 rounded-xl px-2 py-2 border border-surface3"
-              aria-label="Number of meals"
-            />
-            <button
-              type="button"
-              className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-              aria-label="Increase meals"
-              onClick={handleFoodMealsUp}
-            >
-              +
-            </button>
-          </div>
+          <Stepper
+            value={foodMeals}
+            onChange={setFoodMeals}
+            min={INPUT_LIMITS.MEALS_MIN}
+            max={INPUT_LIMITS.MEALS_MAX}
+            label="Number of meals"
+          />
         </div>
       </ActivitySection>
 
       {/* Energy Section */}
-      <ActivitySection
-        title="Energy"
-        color="sky"
-        icon="Zap"
-        subtotal={energyCO2}
-      >
+      <ActivitySection title="Energy" color="sky" icon="Zap" subtotal={energyCO2}>
         <div className="flex flex-col gap-3">
           {/* AC hours */}
           <div className="flex items-center justify-between">
             <label htmlFor="energy-ac" className="text-xs text-muted">
               AC used
             </label>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-                aria-label="Decrease AC hours"
-                onClick={handleAcDown}
-              >
-                −
-              </button>
-              <input
-                id="energy-ac"
-                type="number"
-                min="0"
-                max="24"
-                value={acHours}
-                onChange={handleAcInput}
-                className="w-20 text-center font-mono text-lg text-dark bg-surface2 rounded-xl px-2 py-2 border border-surface3"
-                aria-label="AC hours used"
-              />
-              <button
-                type="button"
-                className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-                aria-label="Increase AC hours"
-                onClick={handleAcUp}
-              >
-                +
-              </button>
-            </div>
+            <Stepper
+              value={acHours}
+              onChange={setAcHours}
+              min={INPUT_LIMITS.HOURS_MIN}
+              max={INPUT_LIMITS.HOURS_MAX}
+              label="AC hours used"
+            />
           </div>
 
           {/* Appliances hours */}
@@ -432,34 +231,13 @@ function LogActivity() {
             <label htmlFor="energy-appliances" className="text-xs text-muted">
               Other appliances
             </label>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-                aria-label="Decrease appliance hours"
-                onClick={handleAppDown}
-              >
-                −
-              </button>
-              <input
-                id="energy-appliances"
-                type="number"
-                min="0"
-                max="24"
-                value={appHours}
-                onChange={handleAppInput}
-                className="w-20 text-center font-mono text-lg text-dark bg-surface2 rounded-xl px-2 py-2 border border-surface3"
-                aria-label="Appliance hours"
-              />
-              <button
-                type="button"
-                className="w-8 h-8 rounded-lg bg-surface2 text-dark font-mono flex items-center justify-center hover:bg-surface3 transition-colors"
-                aria-label="Increase appliance hours"
-                onClick={handleAppUp}
-              >
-                +
-              </button>
-            </div>
+            <Stepper
+              value={appHours}
+              onChange={setAppHours}
+              min={INPUT_LIMITS.HOURS_MIN}
+              max={INPUT_LIMITS.HOURS_MAX}
+              label="Appliance hours used"
+            />
           </div>
         </div>
 
@@ -489,24 +267,14 @@ function LogActivity() {
         icon="ShoppingBag"
         subtotal={shoppingCO2}
       >
-        {/* Type toggle */}
-        <div
-          className="flex flex-wrap gap-2 mb-4"
-          role="radiogroup"
-          aria-label="Select shopping category"
-          onKeyDown={handleShoppingKeyDown}
-        >
-          {shoppingTypes.map((type) => (
-            <RadioButton
-              key={type.id}
-              id={type.id}
-              label={type.label}
-              isSelected={type.id === shoppingType}
-              onSelect={handleShoppingTypeSelect}
-              activeClass="bg-coral text-white"
-              inactiveClass="bg-surface2 text-muted hover:bg-coral/10 hover:text-coral"
-            />
-          ))}
+        <div className="mb-4">
+          <ToggleGroup
+            options={shoppingTypes}
+            selected={shoppingType}
+            onChange={setShoppingType}
+            activeColor="coral"
+            ariaLabel="Select shopping category"
+          />
         </div>
 
         {/* Spend input */}
@@ -534,9 +302,7 @@ function LogActivity() {
           onClick={saveLog}
           disabled={isSaved}
           className={`w-full bg-primary text-white font-semibold text-sm rounded-2xl py-4 shadow-hero transition-colors duration-150 ${
-            isSaved
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-primary/90'
+            isSaved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'
           }`}
           aria-label="Save activity log"
         >
@@ -560,51 +326,5 @@ function LogActivity() {
     </div>
   );
 }
-
-/**
- * Reusable radio button component for toggle groups.
- * Extracted to avoid inline arrow functions in JSX.
- * @param {object} props - Component props
- * @param {string} props.id - Option identifier
- * @param {string} props.label - Display label
- * @param {boolean} props.isSelected - Whether this option is active
- * @param {Function} props.onSelect - Selection handler receiving id
- * @param {string} props.activeClass - Tailwind classes when selected
- * @param {string} props.inactiveClass - Tailwind classes when not selected
- * @returns {React.ReactElement} Rendered radio button
- */
-function RadioButton({ id, label, isSelected, onSelect, activeClass, inactiveClass }) {
-  const handleClick = useCallback(() => {
-    onSelect(id);
-  }, [onSelect, id]);
-
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={isSelected}
-      tabIndex={isSelected ? 0 : -1}
-      onClick={handleClick}
-      className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${isSelected ? activeClass : inactiveClass}`}
-    >
-      {label}
-    </button>
-  );
-}
-
-RadioButton.propTypes = {
-  /** Option identifier */
-  id: PropTypes.string.isRequired,
-  /** Display label */
-  label: PropTypes.string.isRequired,
-  /** Whether this option is active */
-  isSelected: PropTypes.bool.isRequired,
-  /** Selection handler receiving id */
-  onSelect: PropTypes.func.isRequired,
-  /** Tailwind classes when selected */
-  activeClass: PropTypes.string.isRequired,
-  /** Tailwind classes when not selected */
-  inactiveClass: PropTypes.string.isRequired,
-};
 
 export default LogActivity;

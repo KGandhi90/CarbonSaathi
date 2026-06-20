@@ -14,17 +14,10 @@ import { useMemo } from 'react';
  * @returns {React.ReactElement} Rendered weekly bar chart
  */
 function WeeklyChart({ data }) {
-  const maxVal = useMemo(
-    () => Math.max(...data.map((d) => d.value)),
-    [data]
-  );
+  const maxVal = useMemo(() => Math.max(...data.map((d) => d.value)), [data]);
 
   return (
-    <div
-      className="w-full"
-      role="img"
-      aria-label="Weekly carbon emissions bar chart"
-    >
+    <div className="w-full" role="img" aria-label="Weekly carbon emissions bar chart">
       <div className="flex gap-3">
         {/* Y-axis labels */}
         <div className="flex flex-col justify-between h-32 text-right pr-2">
@@ -39,10 +32,7 @@ function WeeklyChart({ data }) {
             const heightPercent = maxVal > 0 ? (item.value / maxVal) * 100 : 0;
 
             return (
-              <div
-                key={item.day}
-                className="flex flex-col items-center gap-1 flex-1"
-              >
+              <div key={item.day} className="flex flex-col items-center gap-1 flex-1">
                 {/* Value label (only for today) */}
                 <div className="h-4 flex items-center justify-center">
                   {item.isToday && (
@@ -67,9 +57,7 @@ function WeeklyChart({ data }) {
                 {/* Day label */}
                 <span
                   className={`font-mono text-xs ${
-                    item.isToday
-                      ? 'text-primary font-medium'
-                      : 'text-muted'
+                    item.isToday ? 'text-primary font-medium' : 'text-muted'
                   }`}
                 >
                   {item.day}
@@ -87,8 +75,8 @@ WeeklyChart.propTypes = {
   /** Weekly emission data array */
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      day:     PropTypes.string.isRequired,
-      value:   PropTypes.number.isRequired,
+      day: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
       isToday: PropTypes.bool.isRequired,
     })
   ).isRequired,

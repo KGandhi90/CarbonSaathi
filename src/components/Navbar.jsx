@@ -13,8 +13,8 @@ import { Leaf, Menu, X } from 'lucide-react';
  * @type {Array<{ to: string, label: string }>}
  */
 const NAV_LINKS = [
-  { to: '/',     label: 'Dashboard' },
-  { to: '/log',  label: 'Log Activity' },
+  { to: '/', label: 'Dashboard' },
+  { to: '/log', label: 'Log Activity' },
   { to: '/chat', label: 'AI Advisor' },
 ];
 
@@ -46,6 +46,8 @@ function getMobileLinkClass({ isActive }) {
 
 /**
  * Main navigation bar for CarbonSaathi.
+ * Renders the top navigation header with branding and links to main sections.
+ * Features a responsive design with a hamburger menu for mobile devices.
  * @returns {React.ReactElement} Rendered navbar
  */
 function Navbar() {
@@ -67,7 +69,11 @@ function Navbar() {
       {/* Inner container */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         {/* Left — Logo */}
-        <NavLink to="/" className="flex items-center gap-2" aria-label="CarbonSaathi home">
+        <NavLink
+          to="/"
+          className="flex items-center gap-2"
+          aria-label="CarbonSaathi home"
+        >
           <Leaf className="w-5 h-5 text-primary" aria-hidden="true" />
           <span className="font-sans text-base font-semibold text-dark">
             Carbon<span className="text-primary">Saathi</span>

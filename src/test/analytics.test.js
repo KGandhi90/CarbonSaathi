@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import ReactGA from 'react-ga4';
-import {
-  initAnalytics,
-  trackPageView,
-  trackEvent,
-} from '../utils/analytics';
+import { initAnalytics, trackPageView, trackEvent } from '../utils/analytics';
 
 describe('analytics', () => {
   it('initAnalytics calls ReactGA.initialize', () => {

@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -117,14 +117,7 @@
 <a name='L52'></a><a href='#L52'>52</a>
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -151,8 +144,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -166,16 +157,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -211,9 +197,7 @@ import { trackEvent } from '../utils/analytics';
  * @returns {TipsState &amp; TipsActions}
  */
 export function <span class="fstat-no" title="function not covered" >useTips() {</span>
-  const [tips, <span class="cstat-no" title="statement not covered" >setTips] = <span class="fstat-no" title="function not covered" >useState(</span></span>
-    () =&gt; <span class="cstat-no" title="statement not covered" >mockTips.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...t, done: false }))</span></span>
-  );
+  const [tips, <span class="cstat-no" title="statement not covered" >setTips] = <span class="fstat-no" title="function not covered" >useState(() =&gt; <span class="cstat-no" title="statement not covered" >m</span>ockTips.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...t, done: false }))</span>)</span>;</span>
 &nbsp;
   /**
    * Marks a tip as complete by id.
@@ -226,17 +210,12 @@ export function <span class="fstat-no" title="function not covered" >useTips() {
 <span class="cstat-no" title="statement not covered" >      if (tip &amp;&amp; !tip.done) {</span>
 <span class="cstat-no" title="statement not covered" >        trackEvent('Dashboard', 'TipCompleted', tip.text);</span>
       }
-<span class="cstat-no" title="statement not covered" >      return prev.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        t.id === tipId ? { ...t, done: true } : t</span>
-      );
+<span class="cstat-no" title="statement not covered" >      return prev.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >t.id === tipId ? { ...t, done: true } : t))</span>;</span>
     });
   }, []);
 &nbsp;
   /** @type {number} Number of completed tips */
-  const <span class="cstat-no" title="statement not covered" >completedCount = <span class="fstat-no" title="function not covered" >useMemo(</span></span>
-    () =&gt; <span class="cstat-no" title="statement not covered" >tips.<span class="fstat-no" title="function not covered" >filter((t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.done)</span>.length,</span>
-    [tips]
-  );
+  const <span class="cstat-no" title="statement not covered" >completedCount = <span class="fstat-no" title="function not covered" >useMemo(() =&gt; <span class="cstat-no" title="statement not covered" >t</span>ips.<span class="fstat-no" title="function not covered" >filter((t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.done)</span>.length, [</span>tips]);</span>
 &nbsp;
   /** @type {number} Total CO₂ savings from completed tips in kg */
   const <span class="cstat-no" title="statement not covered" >totalSavings = <span class="fstat-no" title="function not covered" >useMemo(</span></span>
@@ -253,7 +232,7 @@ export function <span class="fstat-no" title="function not covered" >useTips() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-10T13:32:59.691Z
+                at 2026-06-20T18:19:23.586Z
             </div>
         <script src="../prettify.js"></script>
         <script>

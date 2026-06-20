@@ -109,9 +109,7 @@ export function useDashboard() {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
       return {
-        day: d
-          .toLocaleDateString('en-IN', { weekday: 'short' })
-          .slice(0, 3),
+        day: d.toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 3),
         value: 0,
         isToday: isToday(d),
         _date: d,
@@ -183,10 +181,34 @@ export function useDashboard() {
 
     const total = todayLog.total || 0;
     const categories = [
-      { id: 'transport', label: 'Transport', value: todayLog.transport || 0, icon: 'Car',         color: 'amber'     },
-      { id: 'food',      label: 'Food',      value: todayLog.food      || 0, icon: 'Leaf',        color: 'secondary' },
-      { id: 'energy',    label: 'Energy',    value: todayLog.energy    || 0, icon: 'Zap',         color: 'sky'       },
-      { id: 'shopping',  label: 'Shopping',  value: todayLog.shopping  || 0, icon: 'ShoppingBag', color: 'coral'     },
+      {
+        id: 'transport',
+        label: 'Transport',
+        value: todayLog.transport || 0,
+        icon: 'Car',
+        color: 'amber',
+      },
+      {
+        id: 'food',
+        label: 'Food',
+        value: todayLog.food || 0,
+        icon: 'Leaf',
+        color: 'secondary',
+      },
+      {
+        id: 'energy',
+        label: 'Energy',
+        value: todayLog.energy || 0,
+        icon: 'Zap',
+        color: 'sky',
+      },
+      {
+        id: 'shopping',
+        label: 'Shopping',
+        value: todayLog.shopping || 0,
+        icon: 'ShoppingBag',
+        color: 'coral',
+      },
     ];
 
     return categories.map((cat) => ({

@@ -1,6 +1,7 @@
 /**
  * @fileoverview Manages the Log Activity page form state.
- * All calculations delegated to carbonCalc.js.
+ * All calculations delegated to carbonCalc.js pure functions.
+ * Uses INPUT_LIMITS and TOAST_DURATION_MS from constants.
  * @module hooks/useLog
  */
 
@@ -16,15 +17,17 @@ import {
 } from '../utils/carbonCalc';
 import { trackEvent } from '../utils/analytics';
 import { saveActivityLog } from '../api/firebase';
+import { TOAST_DURATION_MS, INPUT_LIMITS } from '../utils/constants';
 
 /**
- * Manages the Log Activity page form state.
+ * Manages the Log Activity page form state and CO₂ calculations.
  * All calculations delegated to carbonCalc.js pure functions.
+ * Saves to Firebase on submit with error-aware toast feedback.
  * @param {object} ctx - AppContext data
- * @param {Array} ctx.transportModes - Transport mode options
- * @param {Array} ctx.foodTypes - Food type options
- * @param {Array} ctx.shoppingTypes - Shopping category options
- * @returns {object} Log state, derived values, setters, and actions
+ * @param {Array} ctx.transportModes - Transport mode options with emission factors
+ * @param {Array} ctx.foodTypes - Food type options with emission factors
+ * @param {Array} ctx.shoppingTypes - Shopping category options with emission factors
+ * @returns {object} Log state, derived CO₂ values, setters, and save action
  */
 export function useLog({ transportModes, foodTypes, shoppingTypes }) {
   // Transport state
@@ -76,12 +79,13 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
 
   /** @type {number} Total daily emissions in kg CO₂ */
   const totalCO2 = useMemo(
-    () => calcTotal({
-      transport: transportCO2,
-      food: foodCO2,
-      energy: energyCO2,
-      shopping: shoppingCO2,
-    }),
+    () =>
+      calcTotal({
+        transport: transportCO2,
+        food: foodCO2,
+        energy: energyCO2,
+        shopping: shoppingCO2,
+      }),
     [transportCO2, foodCO2, energyCO2, shoppingCO2]
   );
 
@@ -104,12 +108,12 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
    * @param {number} [step=1] - Decrement amount
    */
   const decrement = useCallback((setter, current, min, step = 1) => {
-    setter(clampValue(current - step, min, 999));
+    setter(clampValue(current - step, min, INPUT_LIMITS.SPEND_MAX));
   }, []);
 
   /**
    * Handles direct numeric input with sanitization.
-   * Strips non-numeric characters before setting.
+   * Strips non-numeric characters before clamping.
    * @param {React.ChangeEvent<HTMLInputElement>} e - Change event
    * @param {Function} setter - State setter function
    * @param {number} min - Minimum allowed value
@@ -128,6 +132,7 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
   /**
    * Saves the activity log entry to Firestore.
    * Awaits the result and shows an error toast if Firebase rejects the write.
+   * Uses TOAST_DURATION_MS from constants for auto-dismiss timing.
    * @returns {Promise<void>}
    */
   const saveLog = useCallback(async () => {
@@ -149,34 +154,51 @@ export function useLog({ transportModes, foodTypes, shoppingTypes }) {
       setSaveToast(`Logged! Your CO₂ today: ${formatCO2(totalCO2)} kg 🌱`);
       setIsSaved(true);
     } else {
-      setSaveToast('⚠️ Could not save to Firebase. Check Firestore rules in Firebase Console.');
+      setSaveToast(
+        '⚠️ Could not save to Firebase. Check Firestore rules in Firebase Console.'
+      );
     }
 
     setIsSaving(false);
-    // Auto-dismiss toast after 5s
-    setTimeout(() => setSaveToast(null), 5000);
+    setTimeout(() => setSaveToast(null), TOAST_DURATION_MS);
   }, [isSaving, transportCO2, foodCO2, energyCO2, shoppingCO2, totalCO2]);
 
   return {
     // State
-    transportMode, transportKm,
-    foodType, foodMeals,
-    acHours, appHours, renewable,
-    shoppingType, shoppingSpend,
-    saveToast, isSaved,
+    transportMode,
+    transportKm,
+    foodType,
+    foodMeals,
+    acHours,
+    appHours,
+    renewable,
+    shoppingType,
+    shoppingSpend,
+    saveToast,
+    isSaved,
 
     // Derived
-    transportCO2, foodCO2,
-    energyCO2, shoppingCO2, totalCO2,
+    transportCO2,
+    foodCO2,
+    energyCO2,
+    shoppingCO2,
+    totalCO2,
 
     // Setters
-    setTransportMode, setTransportKm,
-    setFoodType, setFoodMeals,
-    setAcHours, setAppHours, setRenewable,
-    setShoppingType, setShoppingSpend,
+    setTransportMode,
+    setTransportKm,
+    setFoodType,
+    setFoodMeals,
+    setAcHours,
+    setAppHours,
+    setRenewable,
+    setShoppingType,
+    setShoppingSpend,
 
     // Actions
-    increment, decrement,
-    handleNumericInput, saveLog,
+    increment,
+    decrement,
+    handleNumericInput,
+    saveLog,
   };
 }

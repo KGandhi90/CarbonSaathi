@@ -13,8 +13,8 @@ import { Circle, CheckCircle } from 'lucide-react';
  */
 const BORDER_COLOR_MAP = {
   secondary: 'border-l-secondary',
-  amber:     'border-l-amber',
-  sky:       'border-l-sky',
+  amber: 'border-l-amber',
+  sky: 'border-l-sky',
 };
 
 /**
@@ -23,8 +23,8 @@ const BORDER_COLOR_MAP = {
  */
 const DOT_COLOR_MAP = {
   secondary: 'bg-secondary',
-  amber:     'bg-amber',
-  sky:       'bg-sky',
+  amber: 'bg-amber',
+  sky: 'bg-sky',
 };
 
 /**
@@ -46,7 +46,9 @@ function TipCard({ tip, onComplete }) {
   }, [onComplete, tip.id]);
 
   return (
-    <div className={`bg-surface1 border-l-4 ${borderClass} rounded-xl p-4 flex items-center gap-3 shadow-card`}>
+    <div
+      className={`bg-surface1 border-l-4 ${borderClass} rounded-xl p-4 flex items-center gap-3 shadow-card`}
+    >
       {/* Color dot */}
       <div
         className={`w-2 h-2 rounded-full flex-shrink-0 ${dotClass}`}
@@ -55,9 +57,7 @@ function TipCard({ tip, onComplete }) {
 
       {/* Tip content */}
       <div className="flex-1">
-        <p className="text-sm font-medium text-dark">
-          {tip.text}
-        </p>
+        <p className="text-sm font-medium text-dark">{tip.text}</p>
         <span className="inline-flex items-center gap-1 text-xs text-muted font-mono mt-1">
           Saves {tip.saving} kg CO₂
         </span>
@@ -87,11 +87,11 @@ function TipCard({ tip, onComplete }) {
 TipCard.propTypes = {
   /** Tip data object */
   tip: PropTypes.shape({
-    id:     PropTypes.number.isRequired,
-    text:   PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
+    text: PropTypes.string.isRequired,
     saving: PropTypes.number.isRequired,
-    color:  PropTypes.string.isRequired,
-    done:   PropTypes.bool.isRequired,
+    color: PropTypes.string.isRequired,
+    done: PropTypes.bool.isRequired,
   }).isRequired,
   /** Handler when tip is marked complete */
   onComplete: PropTypes.func.isRequired,

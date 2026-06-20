@@ -22,10 +22,10 @@ const ICON_MAP = {
  * @type {Record<string, string>}
  */
 const BAR_COLOR_MAP = {
-  amber:     'bg-amber',
+  amber: 'bg-amber',
   secondary: 'bg-secondary',
-  sky:       'bg-sky',
-  coral:     'bg-coral',
+  sky: 'bg-sky',
+  coral: 'bg-coral',
 };
 
 /**
@@ -33,10 +33,10 @@ const BAR_COLOR_MAP = {
  * @type {Record<string, string>}
  */
 const ICON_COLOR_MAP = {
-  amber:     'text-amber',
+  amber: 'text-amber',
   secondary: 'text-secondary',
-  sky:       'text-sky',
-  coral:     'text-coral',
+  sky: 'text-sky',
+  coral: 'text-coral',
 };
 
 /**
@@ -44,8 +44,8 @@ const ICON_COLOR_MAP = {
  * @type {Record<string, { symbol: string, className: string }>}
  */
 const TREND_MAP = {
-  up:     { symbol: '↑', className: 'text-coral' },
-  down:   { symbol: '↓', className: 'text-secondary' },
+  up: { symbol: '↑', className: 'text-coral' },
+  down: { symbol: '↓', className: 'text-secondary' },
   stable: { symbol: '→', className: 'text-muted' },
 };
 
@@ -67,32 +67,35 @@ function CategoryCard({ category }) {
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
           {IconComponent && (
-            <IconComponent
-              className={`w-4 h-4 ${iconColor}`}
-              aria-hidden="true"
-            />
+            <IconComponent className={`w-4 h-4 ${iconColor}`} aria-hidden="true" />
           )}
           <span className="text-xs font-medium text-muted font-sans uppercase tracking-wide">
             {category.label}
           </span>
         </div>
-        <span className={`text-xs font-mono ${trend.className}`} aria-label={`Trend: ${category.trend}`}>
+        <span
+          className={`text-xs font-mono ${trend.className}`}
+          aria-label={`Trend: ${category.trend}`}
+        >
           {trend.symbol}
         </span>
       </div>
 
       {/* Value */}
       <div>
-        <span className="font-mono text-2xl font-medium text-dark">
-          {category.value}
-        </span>
-        <span className="font-mono text-xs text-muted ml-1">
-          {category.unit}
-        </span>
+        <span className="font-mono text-2xl font-medium text-dark">{category.value}</span>
+        <span className="font-mono text-xs text-muted ml-1">{category.unit}</span>
       </div>
 
       {/* Mini progress bar */}
-      <div className="w-full h-1.5 bg-surface3 rounded-full mt-3" role="progressbar" aria-valuenow={category.percent} aria-valuemin={0} aria-valuemax={100} aria-label={`${category.label}: ${category.percent}% of daily emissions`}>
+      <div
+        className="w-full h-1.5 bg-surface3 rounded-full mt-3"
+        role="progressbar"
+        aria-valuenow={category.percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${category.label}: ${category.percent}% of daily emissions`}
+      >
         <div
           className={`h-1.5 rounded-full transition-all duration-700 ${barColor}`}
           style={{ width: `${category.percent}%` }}
@@ -105,14 +108,14 @@ function CategoryCard({ category }) {
 CategoryCard.propTypes = {
   /** Category data object */
   category: PropTypes.shape({
-    id:      PropTypes.string.isRequired,
-    label:   PropTypes.string.isRequired,
-    value:   PropTypes.number.isRequired,
-    unit:    PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.number.isRequired,
+    unit: PropTypes.string.isRequired,
     percent: PropTypes.number.isRequired,
-    trend:   PropTypes.oneOf(['up', 'down', 'stable']).isRequired,
-    color:   PropTypes.string.isRequired,
-    icon:    PropTypes.string.isRequired,
+    trend: PropTypes.oneOf(['up', 'down', 'stable']).isRequired,
+    color: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
   }).isRequired,
 };
 

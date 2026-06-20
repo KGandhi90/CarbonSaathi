@@ -34,16 +34,30 @@ export function getGreeting() {
 export function getMockReply(input) {
   const msg = input.toLowerCase();
 
-  if (msg.includes('mumbai') || msg.includes('delhi') || msg.includes('bangalore') || msg.includes('city')) {
-    return 'For most Indian metros, switching from daily cab rides to metro rail is the single highest-impact change. Mumbai\'s local train network is one of the most carbon-efficient transit systems in the world at ~0.04 kg CO₂/km. Even 2 days a week on metro saves ~200 kg CO₂ annually.';
+  if (
+    msg.includes('mumbai') ||
+    msg.includes('delhi') ||
+    msg.includes('bangalore') ||
+    msg.includes('city')
+  ) {
+    return "For most Indian metros, switching from daily cab rides to metro rail is the single highest-impact change. Mumbai's local train network is one of the most carbon-efficient transit systems in the world at ~0.04 kg CO₂/km. Even 2 days a week on metro saves ~200 kg CO₂ annually.";
   }
 
-  if (msg.includes('ev') || msg.includes('electric vehicle') || msg.includes('electric car')) {
-    return 'An EV in India is genuinely worth it if you charge from the grid — India\'s grid is ~40% renewable and improving. A Tata Nexon EV emits ~0.05 kg CO₂/km vs ~0.21 kg for a petrol car. Payback period on emissions is ~18 months of average urban driving.';
+  if (
+    msg.includes('ev') ||
+    msg.includes('electric vehicle') ||
+    msg.includes('electric car')
+  ) {
+    return "An EV in India is genuinely worth it if you charge from the grid — India's grid is ~40% renewable and improving. A Tata Nexon EV emits ~0.05 kg CO₂/km vs ~0.21 kg for a petrol car. Payback period on emissions is ~18 months of average urban driving.";
   }
 
-  if (msg.includes('diet') || msg.includes('food') || msg.includes('veg') || msg.includes('meat')) {
-    return 'Diet is India\'s second biggest household emission source. One mutton meal = ~3 kg CO₂ vs 0.5 kg for a veg meal. Going veg just 3 days a week saves ~200 kg CO₂/year — equivalent to planting 9 trees. Local, seasonal produce cuts emissions further by 30–50%.';
+  if (
+    msg.includes('diet') ||
+    msg.includes('food') ||
+    msg.includes('veg') ||
+    msg.includes('meat')
+  ) {
+    return "Diet is India's second biggest household emission source. One mutton meal = ~3 kg CO₂ vs 0.5 kg for a veg meal. Going veg just 3 days a week saves ~200 kg CO₂/year — equivalent to planting 9 trees. Local, seasonal produce cuts emissions further by 30–50%.";
   }
 
   if (msg.includes('offset') || msg.includes('offsetting')) {
@@ -54,7 +68,12 @@ export function getMockReply(input) {
     return 'Home energy in Indian cities is mostly the grid (coal-heavy). Top wins: switch to LED (90% less energy), set AC to 24°C (saves 6% per degree), use 5-star BEE-rated appliances. Rooftop solar payback in India is now under 5 years in most states.';
   }
 
-  if (msg.includes('zomato') || msg.includes('swiggy') || msg.includes('delivery') || msg.includes('cooking')) {
+  if (
+    msg.includes('zomato') ||
+    msg.includes('swiggy') ||
+    msg.includes('delivery') ||
+    msg.includes('cooking')
+  ) {
     return 'Home cooking beats food delivery on carbon by ~40-60%. Delivery adds packaging waste (~0.1 kg CO₂) and last-mile petrol bike emissions. Batch cooking 3-4 meals at once is the most carbon-efficient approach — uses the same energy as one meal.';
   }
 

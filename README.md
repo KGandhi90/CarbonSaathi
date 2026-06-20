@@ -23,8 +23,7 @@
 
 CarbonSaathi ("saathi" means companion in Hindi) is a carbon footprint tracker and AI advisor built specifically for urban Indians. It helps people understand, track, and reduce their daily environmental impact through simple activity logging, real-time insights, and a deeply knowledgeable AI chatbot.
 
-**Live:** [carbonsaathi.vercel.app](https://carbonsaathi.vercel.app)  
-**Repo:** [github.com/KGandhi90/CarbonSaathi](https://github.com/KGandhi90/CarbonSaathi)
+**Live:** [carbonsaathi.vercel.app](https://carbonsaathi.vercel.app)
 
 ---
 

@@ -10,11 +10,7 @@ import {
   clampValue,
   getScoreLabel,
 } from '../utils/carbonCalc';
-import {
-  transportModes,
-  foodTypes,
-  shoppingTypes,
-} from '../data/mockData';
+import { transportModes, foodTypes, shoppingTypes } from '../data/mockData';
 
 describe('calcTransport', () => {
   it('calculates car emissions correctly', () => {
@@ -103,12 +99,14 @@ describe('calcShopping', () => {
 
 describe('calcTotal', () => {
   it('sums all categories correctly', () => {
-    expect(calcTotal({
-      transport: 2.1,
-      food: 1.5,
-      energy: 1.6,
-      shopping: 0,
-    })).toBe(5.2);
+    expect(
+      calcTotal({
+        transport: 2.1,
+        food: 1.5,
+        energy: 1.6,
+        shopping: 0,
+      })
+    ).toBe(5.2);
   });
 
   it('returns 0 for all zero inputs', () => {

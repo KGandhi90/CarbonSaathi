@@ -1,13 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import {
-  formatShareText,
-  getGreeting,
-  getMockReply,
-} from '../utils/helpers';
+import { formatShareText, getGreeting, getMockReply } from '../utils/helpers';
 
 describe('formatShareText', () => {
   it('includes the total CO₂ value', () => {
-    expect(formatShareText(2.40)).toContain('2.40');
+    expect(formatShareText(2.4)).toContain('2.40');
   });
 
   it('includes CarbonSaathi branding', () => {

@@ -2,6 +2,7 @@
  * @fileoverview Firebase integration — Firestore and Anonymous Auth.
  * All logs are scoped to the user's own UID under users/{uid}/activityLogs.
  * Zero personal data collected — users are identified only by Firebase UID.
+ * Uses safeAsync for consistent error handling across all operations.
  * @module api/firebase
  */
 
@@ -18,6 +19,8 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously } from 'firebase/auth';
+import { safeAsync } from '../utils/errorHandler';
+import { RECENT_LOGS_LIMIT } from '../utils/constants';
 
 /**
  * Firebase configuration pulled from environment variables.
@@ -57,20 +60,14 @@ try {
  */
 async function ensureAuth() {
   if (!auth) return;
-  try {
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('Auth failed:', err);
+  if (!auth.currentUser) {
+    await signInAnonymously(auth);
   }
 }
 
 /**
  * Returns the Firestore collection path scoped to the current user's UID.
  * Path: users/{uid}/activityLogs
- * Each user can only access their own subcollection.
  * @returns {import('firebase/firestore').CollectionReference|null}
  */
 function userLogsCollection() {
@@ -93,9 +90,7 @@ function todayDateKey() {
 
 /**
  * Saves (or overwrites) today's activity log in the user's subcollection.
- * Uses the date as the document ID (e.g. "2026-06-17") so that
- * logging a second time on the same day replaces the previous entry
- * instead of creating a duplicate.
+ * Uses the date as the document ID so logging again overwrites the entry.
  * @param {object} logEntry - Activity log data
  * @param {number} logEntry.transport - Transport emissions in kg CO₂
  * @param {number} logEntry.food - Food emissions in kg CO₂
@@ -105,54 +100,45 @@ function todayDateKey() {
  * @returns {Promise<boolean>} True if saved successfully
  */
 export async function saveActivityLog(logEntry) {
-  if (!db) {
-    // eslint-disable-next-line no-console
-    console.warn('saveActivityLog: Firestore not initialized. Check VITE_FIREBASE_* env vars.');
-    return false;
-  }
-  try {
-    await ensureAuth();
-    const col = userLogsCollection();
-    if (!col) {
-      // eslint-disable-next-line no-console
-      console.warn('saveActivityLog: Auth not ready — could not get user UID.');
-      return false;
-    }
-    const docRef = doc(col, todayDateKey());
-    await setDoc(docRef, {
-      ...logEntry,
-      timestamp: serverTimestamp(),
-    });
-    return true;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('saveActivityLog failed — check Firestore rules:', err.code, err.message);
-    return false;
-  }
+  if (!db) return false;
+  return safeAsync(
+    async () => {
+      await ensureAuth();
+      const col = userLogsCollection();
+      if (!col) return false;
+      const docRef = doc(col, todayDateKey());
+      await setDoc(docRef, {
+        ...logEntry,
+        timestamp: serverTimestamp(),
+      });
+      return true;
+    },
+    'saveActivityLog',
+    false
+  );
 }
 
 /**
- * Fetches the most recent 30 logs for the current user only.
- * Scoped to users/{uid}/activityLogs — other users cannot access this data.
- * All date filtering (today / weekly / monthly) is done client-side
- * to avoid requiring Firestore composite indexes.
+ * Fetches the most recent logs for the current user only.
+ * Uses RECENT_LOGS_LIMIT from constants instead of a magic number.
+ * All date filtering is done client-side in useDashboard.
  * @returns {Promise<Array<object>>} Array of the current user's log objects
  */
 export async function getRecentLogs() {
   if (!db) return [];
-  try {
-    await ensureAuth();
-    const col = userLogsCollection();
-    if (!col) return [];
-    const q = query(col, orderBy('timestamp', 'desc'), limit(30));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('Log fetch failed:', err.code, err.message);
-    return [];
-  }
+  return safeAsync(
+    async () => {
+      await ensureAuth();
+      const col = userLogsCollection();
+      if (!col) return [];
+      const q = query(col, orderBy('timestamp', 'desc'), limit(RECENT_LOGS_LIMIT));
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+    },
+    'getRecentLogs',
+    []
+  );
 }

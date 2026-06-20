@@ -24,7 +24,7 @@ const QUICK_REPLIES = [
   'How to reduce home energy use?',
   'Zomato vs cooking at home?',
   'How bad is air travel?',
-  'India\'s carbon target?',
+  "India's carbon target?",
 ];
 
 /**
@@ -35,19 +35,15 @@ const TYPING_DOTS = [0, 1, 2];
 
 /**
  * Chat page component — AI Advisor interface.
+ * Displays an interactive chat interface for users to talk with the
+ * CarbonSaathi AI. Handles message history, typing indicators, quick
+ * replies, and auto-expanding input fields.
  * @returns {React.ReactElement} Rendered chat page
  */
 function Chat() {
   const { chatSeedMessages, userProfile } = useAppContext();
-  const {
-    messages,
-    input,
-    isTyping,
-    error,
-    setInput,
-    sendMessage,
-    handleKeyDown,
-  } = useChat(chatSeedMessages);
+  const { messages, input, isTyping, error, setInput, sendMessage, handleKeyDown } =
+    useChat(chatSeedMessages);
 
   const messagesRef = useRef(null);
   const textareaRef = useRef(null);
@@ -64,9 +60,12 @@ function Chat() {
    * Handles input change for the textarea.
    * @param {React.ChangeEvent<HTMLTextAreaElement>} e - Change event
    */
-  const handleInputChange = useCallback((e) => {
-    setInput(e.target.value);
-  }, [setInput]);
+  const handleInputChange = useCallback(
+    (e) => {
+      setInput(e.target.value);
+    },
+    [setInput]
+  );
 
   /**
    * Auto-expands textarea height based on content.
@@ -82,9 +81,12 @@ function Chat() {
    * Handles quick reply chip click.
    * @param {string} text - Quick reply text
    */
-  const handleQuickReply = useCallback((text) => {
-    sendMessage(text);
-  }, [sendMessage]);
+  const handleQuickReply = useCallback(
+    (text) => {
+      sendMessage(text);
+    },
+    [sendMessage]
+  );
 
   /** @type {boolean} Whether the send button should be disabled */
   const isSendDisabled = !input.trim();
@@ -109,9 +111,7 @@ function Chat() {
 
         {/* Title */}
         <div className="flex-1">
-          <h1 className="font-sans text-base font-semibold text-dark">
-            CarbonSaathi AI
-          </h1>
+          <h1 className="font-sans text-base font-semibold text-dark">CarbonSaathi AI</h1>
           <p className="font-sans text-xs text-muted mt-0.5">
             Your personal sustainability advisor
           </p>
@@ -119,13 +119,8 @@ function Chat() {
 
         {/* Online status */}
         <div className="flex items-center gap-1.5">
-          <span
-            className="w-2 h-2 rounded-full bg-secondary pulse"
-            aria-hidden="true"
-          />
-          <span className="text-xs text-secondary font-medium">
-            Online
-          </span>
+          <span className="w-2 h-2 rounded-full bg-secondary pulse" aria-hidden="true" />
+          <span className="text-xs text-secondary font-medium">Online</span>
         </div>
       </div>
 
@@ -137,8 +132,7 @@ function Chat() {
         />
         <p className="font-sans text-xs text-muted leading-relaxed">
           Based on your profile: Urban Indian · {userProfile.city} · Avg{' '}
-          {userProfile.avgDaily} kg CO₂/day · Main source:{' '}
-          {userProfile.mainSource} (33%)
+          {userProfile.avgDaily} kg CO₂/day · Main source: {userProfile.mainSource} (33%)
         </p>
       </div>
 
@@ -203,19 +197,13 @@ function Chat() {
       {/* Quick Reply Chips */}
       <div
         className={`flex flex-wrap gap-2 mb-4 transition-opacity duration-300 ${
-          showQuickReplies
-            ? ''
-            : 'opacity-0 pointer-events-none h-0 mb-0 overflow-hidden'
+          showQuickReplies ? '' : 'opacity-0 pointer-events-none h-0 mb-0 overflow-hidden'
         }`}
         role="group"
         aria-label="Suggested questions"
       >
         {QUICK_REPLIES.map((question) => (
-          <QuickReplyChip
-            key={question}
-            text={question}
-            onClick={handleQuickReply}
-          />
+          <QuickReplyChip key={question} text={question} onClick={handleQuickReply} />
         ))}
       </div>
 
@@ -239,16 +227,11 @@ function Chat() {
           onClick={sendMessage}
           disabled={isSendDisabled}
           className={`w-10 h-10 rounded-xl flex-shrink-0 bg-primary flex items-center justify-center transition-colors duration-150 ${
-            isSendDisabled
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-primary/90'
+            isSendDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'
           }`}
           aria-label="Send message"
         >
-          <SendHorizontal
-            className="w-4 h-4 text-white"
-            aria-hidden="true"
-          />
+          <SendHorizontal className="w-4 h-4 text-white" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -279,7 +262,6 @@ function QuickReplyChip({ text, onClick }) {
     </button>
   );
 }
-
 
 QuickReplyChip.propTypes = {
   /** Chip label text */

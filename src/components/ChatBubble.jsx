@@ -25,9 +25,7 @@ function ChatBubble({ role, content, timestamp }) {
         >
           {content}
         </article>
-        <span className="text-xs text-muted mt-1 text-right">
-          {timestamp}
-        </span>
+        <span className="text-xs text-muted mt-1 text-right">{timestamp}</span>
       </div>
     );
   }
@@ -52,9 +50,7 @@ function ChatBubble({ role, content, timestamp }) {
           {content}
         </article>
       </div>
-      <span className="text-xs text-muted mt-1 ml-10 text-left">
-        {timestamp}
-      </span>
+      <span className="text-xs text-muted mt-1 ml-10 text-left">{timestamp}</span>
     </div>
   );
 }

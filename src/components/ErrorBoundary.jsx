@@ -9,7 +9,9 @@ import PropTypes from 'prop-types';
 import { trackEvent } from '../utils/analytics';
 
 /**
- * Error boundary that catches render errors and displays a fallback UI.
+ * Error boundary component.
+ * Catches JavaScript errors anywhere in their child component tree,
+ * logs those errors, and displays a fallback UI instead of crashing the app.
  * @extends {Component}
  */
 class ErrorBoundary extends Component {
@@ -55,7 +57,9 @@ class ErrorBoundary extends Component {
         role="alert"
         className="min-h-screen bg-base flex flex-col items-center justify-center p-8 text-center"
       >
-        <span className="text-5xl mb-4" aria-hidden="true">🌱</span>
+        <span className="text-5xl mb-4" aria-hidden="true">
+          🌱
+        </span>
         <h1 className="font-display text-2xl font-bold text-dark mb-2">
           Something went wrong
         </h1>

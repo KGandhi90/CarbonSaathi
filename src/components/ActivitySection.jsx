@@ -24,10 +24,10 @@ const ICON_MAP = {
  * @type {Record<string, string>}
  */
 const BG_COLOR_MAP = {
-  amber:     'bg-amber/10',
+  amber: 'bg-amber/10',
   secondary: 'bg-secondary/10',
-  sky:       'bg-sky/10',
-  coral:     'bg-coral/10',
+  sky: 'bg-sky/10',
+  coral: 'bg-coral/10',
 };
 
 /**
@@ -35,10 +35,10 @@ const BG_COLOR_MAP = {
  * @type {Record<string, string>}
  */
 const TEXT_COLOR_MAP = {
-  amber:     'text-amber',
+  amber: 'text-amber',
   secondary: 'text-secondary',
-  sky:       'text-sky',
-  coral:     'text-coral',
+  sky: 'text-sky',
+  coral: 'text-coral',
 };
 
 /**
@@ -78,15 +78,11 @@ function ActivitySection({ title, color, icon, subtotal, children }) {
           className={`w-9 h-9 rounded-xl flex items-center justify-center ${bgClass}`}
           aria-hidden="true"
         >
-          {IconComponent && (
-            <IconComponent className={`w-4 h-4 ${textClass}`} />
-          )}
+          {IconComponent && <IconComponent className={`w-4 h-4 ${textClass}`} />}
         </div>
 
         {/* Title */}
-        <span className="text-sm font-semibold text-dark font-sans">
-          {title}
-        </span>
+        <span className="text-sm font-semibold text-dark font-sans">{title}</span>
 
         {/* Subtotal pill */}
         <span className="ml-auto mr-2 font-mono text-xs bg-surface2 text-primary rounded-full px-2.5 py-1 border border-surface3">
@@ -119,11 +115,11 @@ function ActivitySection({ title, color, icon, subtotal, children }) {
 
 ActivitySection.propTypes = {
   /** Section title */
-  title:    PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
   /** Theme color name */
-  color:    PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
   /** Lucide icon name */
-  icon:     PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
   /** Running CO₂ subtotal in kg */
   subtotal: PropTypes.number.isRequired,
   /** Form input children */

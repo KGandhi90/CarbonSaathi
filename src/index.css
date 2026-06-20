@@ -9,8 +9,8 @@
 }
 
 body {
-  background-color: #F0F4F0;
-  color: #1B2B1E;
+  background-color: #f0f4f0;
+  color: #1b2b1e;
   font-family: 'DM Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -20,7 +20,7 @@ body {
   position: absolute;
   top: -100%;
   left: 1rem;
-  background: #2D6A4F;
+  background: #2d6a4f;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0 0 8px 8px;
@@ -35,15 +35,21 @@ body {
 
 /* Focus rings */
 *:focus-visible {
-  outline: 2px solid #2D6A4F;
+  outline: 2px solid #2d6a4f;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* Page enter animation */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .page-enter {
   animation: fadeUp 0.25s ease forwards;
@@ -51,8 +57,13 @@ body {
 
 /* Pulse animation for live indicators */
 @keyframes pulseGreen {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 .pulse {
   animation: pulseGreen 1.8s ease infinite;
@@ -60,23 +71,24 @@ body {
 
 /* Shimmer for skeletons */
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #E8EFE8 25%,
-    #F0F4F0 50%,
-    #E8EFE8 75%
-  );
+  background: linear-gradient(90deg, #e8efe8 25%, #f0f4f0 50%, #e8efe8 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 8px;
 }
 
 /* Hide scrollbar */
-.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -84,13 +96,14 @@ body {
 
 /* Pressable card */
 .pressable {
-  transition: transform 0.12s ease,
-              box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
   cursor: pointer;
 }
 .pressable:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(45,106,79,0.12);
+  box-shadow: 0 4px 16px rgba(45, 106, 79, 0.12);
 }
 .pressable:active {
   transform: scale(0.98);

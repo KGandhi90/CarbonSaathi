@@ -5,6 +5,8 @@
  * @module utils/carbonCalc
  */
 
+import { MAX_DAILY_CO2_KG, SCORE_THRESHOLDS, ENERGY_FACTORS } from './constants';
+
 /**
  * Calculates transport CO₂ emissions.
  * @param {string} mode - Transport mode id
@@ -33,16 +35,15 @@ export function calcFood(type, meals, types) {
 
 /**
  * Calculates energy CO₂ emissions.
+ * Uses centralized emission factors from constants.
  * @param {number} acHours - AC usage in hours
  * @param {number} appHours - Appliance usage hours
- * @param {boolean} renewable - Renewable energy used
+ * @param {boolean} renewable - Whether renewable energy is used
  * @returns {number} CO₂ in kg, rounded to 2dp
  */
 export function calcEnergy(acHours, appHours, renewable) {
-  const AC_FACTOR = 0.5;
-  const APP_FACTOR = 0.2;
-  const raw = (acHours * AC_FACTOR) + (appHours * APP_FACTOR);
-  const adjusted = renewable ? raw * 0.5 : raw;
+  const raw = acHours * ENERGY_FACTORS.AC + appHours * ENERGY_FACTORS.APPLIANCES;
+  const adjusted = renewable ? raw * ENERGY_FACTORS.RENEWABLE_MULTIPLIER : raw;
   return Math.round(adjusted * 100) / 100;
 }
 
@@ -66,23 +67,20 @@ export function calcShopping(type, spend, types) {
  * @returns {number} Total CO₂ in kg
  */
 export function calcTotal(breakdown) {
-  return Math.round(
-    Object.values(breakdown).reduce((sum, val) => sum + val, 0) * 100
-  ) / 100;
+  return (
+    Math.round(Object.values(breakdown).reduce((sum, val) => sum + val, 0) * 100) / 100
+  );
 }
 
 /**
  * Calculates carbon score (0–100).
  * Lower emissions = higher score.
- * Indian avg daily = ~7.5 kg CO₂.
+ * Uses MAX_DAILY_CO2_KG from constants (Indian avg ~7.5 kg CO₂/day).
  * @param {number} totalKg - Daily total in kg
  * @returns {number} Score 0–100
  */
 export function calcScore(totalKg) {
-  const MAX_DAILY = 7.5;
-  const score = Math.round(
-    (1 - Math.min(totalKg / MAX_DAILY, 1)) * 100
-  );
+  const score = Math.round((1 - Math.min(totalKg / MAX_DAILY_CO2_KG, 1)) * 100);
   return Math.max(0, Math.min(100, score));
 }
 
@@ -110,15 +108,16 @@ export function clampValue(value, min, max) {
 }
 
 /**
- * Returns score label and color variant.
+ * Returns score label and color variant based on score thresholds.
+ * Uses SCORE_THRESHOLDS from constants instead of hardcoded values.
  * @param {number} score - Score 0–100
- * @returns {{ label: string, variant: string }}
+ * @returns {{ label: string, variant: string }} Label text and color variant
  */
 export function getScoreLabel(score) {
-  if (score >= 70) {
+  if (score >= SCORE_THRESHOLDS.LOW_IMPACT) {
     return { label: 'Low Impact 🌿', variant: 'primary' };
   }
-  if (score >= 40) {
+  if (score >= SCORE_THRESHOLDS.MODERATE_IMPACT) {
     return { label: 'Moderate Impact ⚡', variant: 'amber' };
   }
   return { label: 'High Impact ⚠️', variant: 'coral' };

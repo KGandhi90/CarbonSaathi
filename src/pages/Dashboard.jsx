@@ -17,7 +17,9 @@ import { trackEvent } from '../utils/analytics';
 
 /**
  * Dashboard page component.
- * Fetches real-time carbon data from Firebase and renders it.
+ * Main view of CarbonSaathi. Fetches real-time carbon data from Firebase
+ * and displays the user's daily/weekly stats, carbon score, and category
+ * breakdown. Also displays interactive actionable sustainability tips.
  * @returns {React.ReactElement} Rendered dashboard
  */
 function Dashboard() {
@@ -95,9 +97,7 @@ function Dashboard() {
         {/* Top row */}
         <div className="flex justify-between items-start">
           <div>
-            <p className="font-sans text-sm text-white/70 mb-1">
-              {greeting}
-            </p>
+            <p className="font-sans text-sm text-white/70 mb-1">{greeting}</p>
             <h1 className="font-display text-2xl sm:text-3xl text-white leading-tight">
               Your Carbon Score
             </h1>
@@ -118,9 +118,7 @@ function Dashboard() {
               className="text-center py-2 max-w-[160px]"
               aria-label="No activity logged yet"
             >
-              <p className="font-display text-lg text-white mb-1">
-                No logs yet!
-              </p>
+              <p className="font-display text-lg text-white mb-1">No logs yet!</p>
               <p className="font-sans text-xs text-white/70 mb-3">
                 Log today&apos;s activities to see your real carbon footprint here
               </p>
@@ -142,25 +140,19 @@ function Dashboard() {
             <span className="font-mono text-lg font-medium text-white">
               {formattedToday} kg
             </span>
-            <span className="font-sans text-xs text-white/60 mt-0.5">
-              Today
-            </span>
+            <span className="font-sans text-xs text-white/60 mt-0.5">Today</span>
           </div>
           <div className="flex flex-col flex-shrink-0">
             <span className="font-mono text-lg font-medium text-white">
               {formattedWeekly} kg
             </span>
-            <span className="font-sans text-xs text-white/60 mt-0.5">
-              This Week
-            </span>
+            <span className="font-sans text-xs text-white/60 mt-0.5">This Week</span>
           </div>
           <div className="flex flex-col flex-shrink-0">
             <span className="font-mono text-lg font-medium text-white">
               {formattedMonthly} kg
             </span>
-            <span className="font-sans text-xs text-white/60 mt-0.5">
-              This Month
-            </span>
+            <span className="font-sans text-xs text-white/60 mt-0.5">This Month</span>
           </div>
         </div>
       </section>
@@ -182,9 +174,7 @@ function Dashboard() {
       {/* Weekly Chart */}
       <section aria-label="Weekly emission trend">
         <div className="flex items-center gap-2.5 border-l-4 border-primary pl-3 mb-4">
-          <h2 className="font-sans text-sm font-medium text-dark">
-            This Week
-          </h2>
+          <h2 className="font-sans text-sm font-medium text-dark">This Week</h2>
         </div>
         <div className="bg-surface1 border border-surface3 rounded-2xl p-5 shadow-card">
           <WeeklyChart data={weeklyChartData} />
@@ -212,17 +202,11 @@ function Dashboard() {
       {/* Tips Section */}
       <section aria-label="Actionable tips for today">
         <div className="flex items-center gap-2.5 border-l-4 border-primary pl-3 mb-4">
-          <h2 className="font-sans text-sm font-medium text-dark">
-            Actions for Today
-          </h2>
+          <h2 className="font-sans text-sm font-medium text-dark">Actions for Today</h2>
         </div>
         <div className="flex flex-col gap-3">
           {tips.map((tip) => (
-            <TipCard
-              key={tip.id}
-              tip={tip}
-              onComplete={completeTip}
-            />
+            <TipCard key={tip.id} tip={tip} onComplete={completeTip} />
           ))}
         </div>
 
@@ -234,7 +218,8 @@ function Dashboard() {
             aria-live="polite"
           >
             <span className="font-mono text-sm text-secondary">
-              ✓ {completedCount} tip{completedCount > 1 ? 's' : ''} done · Saves {totalSavings.toFixed(1)} kg CO₂ today
+              ✓ {completedCount} tip{completedCount > 1 ? 's' : ''} done · Saves{' '}
+              {totalSavings.toFixed(1)} kg CO₂ today
             </span>
           </div>
         )}
@@ -247,7 +232,7 @@ function Dashboard() {
         className="block w-full bg-primary hover:bg-primary/90 text-white font-semibold text-sm text-center rounded-2xl py-4 mt-2 transition-colors duration-150 shadow-card"
         aria-label="Navigate to log activity page"
       >
-        {hasRealData ? 'Update Today\'s Log →' : 'Log Today\'s Activities →'}
+        {hasRealData ? "Update Today's Log →" : "Log Today's Activities →"}
       </button>
 
       {/* Profile badge */}

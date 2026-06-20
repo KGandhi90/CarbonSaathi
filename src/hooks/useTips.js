@@ -24,9 +24,7 @@ import { trackEvent } from '../utils/analytics';
  * @returns {TipsState & TipsActions}
  */
 export function useTips() {
-  const [tips, setTips] = useState(
-    () => mockTips.map((t) => ({ ...t, done: false }))
-  );
+  const [tips, setTips] = useState(() => mockTips.map((t) => ({ ...t, done: false })));
 
   /**
    * Marks a tip as complete by id.
@@ -39,17 +37,12 @@ export function useTips() {
       if (tip && !tip.done) {
         trackEvent('Dashboard', 'TipCompleted', tip.text);
       }
-      return prev.map((t) =>
-        t.id === tipId ? { ...t, done: true } : t
-      );
+      return prev.map((t) => (t.id === tipId ? { ...t, done: true } : t));
     });
   }, []);
 
   /** @type {number} Number of completed tips */
-  const completedCount = useMemo(
-    () => tips.filter((t) => t.done).length,
-    [tips]
-  );
+  const completedCount = useMemo(() => tips.filter((t) => t.done).length, [tips]);
 
   /** @type {number} Total CO₂ savings from completed tips in kg */
   const totalSavings = useMemo(

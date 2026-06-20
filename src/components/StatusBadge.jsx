@@ -10,12 +10,12 @@ import PropTypes from 'prop-types';
  * @type {Record<string, string>}
  */
 const VARIANT_CLASSES = {
-  primary:   'bg-primary/10 text-primary border border-primary/20',
+  primary: 'bg-primary/10 text-primary border border-primary/20',
   secondary: 'bg-secondary/10 text-secondary border border-secondary/20',
-  coral:     'bg-coral/10 text-coral border border-coral/20',
-  amber:     'bg-amber/10 text-amber border border-amber/20',
-  sky:       'bg-sky/10 text-sky border border-sky/20',
-  muted:     'bg-surface3 text-muted border border-surface3',
+  coral: 'bg-coral/10 text-coral border border-coral/20',
+  amber: 'bg-amber/10 text-amber border border-amber/20',
+  sky: 'bg-sky/10 text-sky border border-sky/20',
+  muted: 'bg-surface3 text-muted border border-surface3',
 };
 
 /**
@@ -41,14 +41,8 @@ StatusBadge.propTypes = {
   /** Display text */
   label: PropTypes.string.isRequired,
   /** Color variant */
-  variant: PropTypes.oneOf([
-    'primary',
-    'secondary',
-    'coral',
-    'amber',
-    'sky',
-    'muted',
-  ]).isRequired,
+  variant: PropTypes.oneOf(['primary', 'secondary', 'coral', 'amber', 'sky', 'muted'])
+    .isRequired,
 };
 
 export default StatusBadge;

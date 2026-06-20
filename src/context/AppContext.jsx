@@ -35,19 +35,18 @@ const AppContext = createContext(null);
  * @returns {React.ReactElement} Context provider wrapper
  */
 export function AppProvider({ children }) {
-  const value = useMemo(() => ({
-    transportModes,
-    foodTypes,
-    shoppingTypes,
-    chatSeedMessages,
-    userProfile,
-  }), []);
-
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
+  const value = useMemo(
+    () => ({
+      transportModes,
+      foodTypes,
+      shoppingTypes,
+      chatSeedMessages,
+      userProfile,
+    }),
+    []
   );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 AppProvider.propTypes = {

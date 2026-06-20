@@ -18,16 +18,12 @@ describe('ChatBubble', () => {
   });
 
   it('renders timestamp', () => {
-    render(
-      <ChatBubble role="user" content="Hello" timestamp="10:24 AM" />
-    );
+    render(<ChatBubble role="user" content="Hello" timestamp="10:24 AM" />);
     expect(screen.getByText('10:24 AM')).toBeInTheDocument();
   });
 
   it('renders AI avatar for assistant', () => {
-    render(
-      <ChatBubble role="assistant" content="Hello" timestamp="10:00 AM" />
-    );
+    render(<ChatBubble role="assistant" content="Hello" timestamp="10:00 AM" />);
     expect(screen.getByText('🌱')).toBeInTheDocument();
   });
 });

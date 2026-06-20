@@ -1,11 +1,14 @@
 /**
  * @fileoverview Gemini AI integration for CarbonSaathi chat.
  * Falls back to mock replies when API key is unavailable.
+ * Uses safeAsync for consistent error handling.
  * @module api/geminiApi
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getMockReply } from '../utils/helpers';
+import { safeAsync } from '../utils/errorHandler';
+import { TYPING_SIMULATION_MS } from '../utils/constants';
 
 /**
  * System prompt defining CarbonSaathi AI's expertise, persona, and response style.
@@ -115,6 +118,7 @@ function getModel() {
 /**
  * Sends a message to Gemini with conversation history for multi-turn memory.
  * Falls back to mock reply if API is unavailable or errors occur.
+ * Uses safeAsync for consistent error handling.
  * @param {string} userMessage - User input text
  * @param {Array<{ role: string, content: string }>} history - Previous conversation turns
  * @returns {Promise<string>} AI response text
@@ -123,22 +127,22 @@ export async function sendToGemini(userMessage, history = []) {
   const model = getModel();
 
   if (!model) {
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, TYPING_SIMULATION_MS));
     return getMockReply(userMessage);
   }
 
-  try {
-    const chat = model.startChat({
-      history: history.map((msg) => ({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: msg.content }],
-      })),
-    });
-    const result = await chat.sendMessage(userMessage);
-    return result.response.text();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn('Gemini API error:', error);
-    return getMockReply(userMessage);
-  }
+  return safeAsync(
+    async () => {
+      const chat = model.startChat({
+        history: history.map((msg) => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        })),
+      });
+      const result = await chat.sendMessage(userMessage);
+      return result.response.text();
+    },
+    'sendToGemini',
+    getMockReply(userMessage)
+  );
 }

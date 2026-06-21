@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>5/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -143,33 +143,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @fileoverview Manages tip completion state on Dashboard.
@@ -196,34 +196,34 @@ import { trackEvent } from '../utils/analytics';
  * Manages tip completion state on Dashboard.
  * @returns {TipsState &amp; TipsActions}
  */
-export function <span class="fstat-no" title="function not covered" >useTips() {</span>
-  const [tips, <span class="cstat-no" title="statement not covered" >setTips] = <span class="fstat-no" title="function not covered" >useState(() =&gt; <span class="cstat-no" title="statement not covered" >m</span>ockTips.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...t, done: false }))</span>)</span>;</span>
+export function useTips() {
+  const [tips, setTips] = useState(() =&gt; mockTips.map((t) =&gt; ({ ...t, done: false })));
 &nbsp;
   /**
    * Marks a tip as complete by id.
    * Fires GA event on completion.
    * @param {number} tipId - Tip identifier
    */
-  const <span class="cstat-no" title="statement not covered" >completeTip = <span class="fstat-no" title="function not covered" >useCallback((t</span>ipId) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    setTips((p</span>rev) =&gt; {</span>
-      const tip = <span class="cstat-no" title="statement not covered" >prev.<span class="fstat-no" title="function not covered" >find((t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.id === tipId)</span>;</span>
-<span class="cstat-no" title="statement not covered" >      if (tip &amp;&amp; !tip.done) {</span>
-<span class="cstat-no" title="statement not covered" >        trackEvent('Dashboard', 'TipCompleted', tip.text);</span>
+  const completeTip = useCallback((tipId) =&gt; {
+    setTips((prev) =&gt; {
+      const tip = prev.find((t) =&gt; t.id === tipId);
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (tip &amp;&amp; !tip.done) {
+        trackEvent('Dashboard', 'TipCompleted', tip.text);
       }
-<span class="cstat-no" title="statement not covered" >      return prev.<span class="fstat-no" title="function not covered" >map((t</span>) =&gt; (<span class="cstat-no" title="statement not covered" >t.id === tipId ? { ...t, done: true } : t))</span>;</span>
+      return prev.map((t) =&gt; (t.id === tipId ? { ...t, done: true } : t));
     });
   }, []);
 &nbsp;
   /** @type {number} Number of completed tips */
-  const <span class="cstat-no" title="statement not covered" >completedCount = <span class="fstat-no" title="function not covered" >useMemo(() =&gt; <span class="cstat-no" title="statement not covered" >t</span>ips.<span class="fstat-no" title="function not covered" >filter((t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.done)</span>.length, [</span>tips]);</span>
+  const completedCount = useMemo(() =&gt; tips.filter((t) =&gt; t.done).length, [tips]);
 &nbsp;
   /** @type {number} Total CO₂ savings from completed tips in kg */
-  const <span class="cstat-no" title="statement not covered" >totalSavings = <span class="fstat-no" title="function not covered" >useMemo(</span></span>
-    () =&gt; <span class="cstat-no" title="statement not covered" >tips.<span class="fstat-no" title="function not covered" >filter((t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t.done)</span>.<span class="fstat-no" title="function not covered" >reduce((s</span>um, t) =&gt; <span class="cstat-no" title="statement not covered" >sum + t.saving, 0</span>),</span>
+  const totalSavings = useMemo(
+    () =&gt; tips.filter((t) =&gt; t.done).reduce((sum, t) =&gt; sum + t.saving, 0),
     [tips]
   );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return { tips, completeTip, completedCount, totalSavings };</span>
+  return { tips, completeTip, completedCount, totalSavings };
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -232,7 +232,7 @@ export function <span class="fstat-no" title="function not covered" >useTips() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-20T18:19:23.586Z
+                at 2026-06-21T09:26:03.793Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -70,6 +70,12 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
       include: ['src/utils/**', 'src/hooks/**', 'src/components/**'],
+      thresholds: {
+        lines: 75,
+        functions: 75,
+        branches: 65,
+        statements: 75,
+      },
     },
   },
 });

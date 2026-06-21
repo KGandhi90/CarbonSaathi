@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -184,17 +184,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -263,7 +263,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -288,18 +288,18 @@ import PropTypes from 'prop-types';
  * @param {boolean} [props.light=false] - White variant for hero
  * @returns {React.ReactElement} Rendered score ring
  */
-function <span class="fstat-no" title="function not covered" >ScoreRing({</span> score, size = <span class="branch-0 cbranch-no" title="branch not covered" >80, l</span>ight = <span class="branch-0 cbranch-no" title="branch not covered" >false }) {</span>
-  const center = <span class="cstat-no" title="statement not covered" >size / 2;</span>
-  const radius = <span class="cstat-no" title="statement not covered" >center - 8;</span>
-  const circumference = <span class="cstat-no" title="statement not covered" >2 * Math.PI * radius;</span>
-  const offset = <span class="cstat-no" title="statement not covered" >circumference * (1 - score / 100);</span>
+function ScoreRing({ score, size = 80, light = false }) {
+  const center = size / 2;
+  const radius = center - 8;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - score / 100);
 &nbsp;
-  const bgStroke = <span class="cstat-no" title="statement not covered" >light ? 'rgba(255,255,255,0.2)' : '#E8EFE8';</span>
-  const fgStroke = <span class="cstat-no" title="statement not covered" >light ? 'white' : 'url(#scoreGrad)';</span>
-  const textColor = <span class="cstat-no" title="statement not covered" >light ? 'text-white' : 'text-dark';</span>
-  const mutedColor = <span class="cstat-no" title="statement not covered" >light ? 'text-white/60' : 'text-muted';</span>
+  const bgStroke = light ? <span class="branch-0 cbranch-no" title="branch not covered" >'rgba(255,255,255,0.2)' : '</span>#E8EFE8';
+  const fgStroke = light ? <span class="branch-0 cbranch-no" title="branch not covered" >'white' : '</span>url(#scoreGrad)';
+  const textColor = light ? <span class="branch-0 cbranch-no" title="branch not covered" >'text-white' : '</span>text-dark';
+  const mutedColor = light ? <span class="branch-0 cbranch-no" title="branch not covered" >'text-white/60' : '</span>text-muted';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;svg
       width={size}
       height={size}
@@ -368,7 +368,7 @@ function <span class="fstat-no" title="function not covered" >ScoreRing({</span>
   );
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >ScoreRing.propTypes = {</span>
+ScoreRing.propTypes = {
   /** Score value 0-100 */
   score: PropTypes.number.isRequired,
   /** Ring diameter in px */
@@ -385,7 +385,7 @@ export default ScoreRing;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-20T18:19:23.586Z
+                at 2026-06-21T09:26:03.793Z
             </div>
         <script src="../prettify.js"></script>
         <script>

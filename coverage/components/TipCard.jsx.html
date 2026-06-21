@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -176,7 +176,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -186,7 +186,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -200,17 +200,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,7 +249,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -276,7 +276,7 @@ import { Circle, CheckCircle } from 'lucide-react';
  * Maps tip color names to border-left Tailwind classes.
  * @type {Record&lt;string, string&gt;}
  */
-const BORDER_COLOR_MAP = <span class="cstat-no" title="statement not covered" >{</span>
+const BORDER_COLOR_MAP = {
   secondary: 'border-l-secondary',
   amber: 'border-l-amber',
   sky: 'border-l-sky',
@@ -286,7 +286,7 @@ const BORDER_COLOR_MAP = <span class="cstat-no" title="statement not covered" >{
  * Maps tip color names to dot background Tailwind classes.
  * @type {Record&lt;string, string&gt;}
  */
-const DOT_COLOR_MAP = <span class="cstat-no" title="statement not covered" >{</span>
+const DOT_COLOR_MAP = {
   secondary: 'bg-secondary',
   amber: 'bg-amber',
   sky: 'bg-sky',
@@ -299,18 +299,18 @@ const DOT_COLOR_MAP = <span class="cstat-no" title="statement not covered" >{</s
  * @param {Function} props.onComplete - Mark done handler (receives tip id)
  * @returns {React.ReactElement} Rendered tip card
  */
-function <span class="fstat-no" title="function not covered" >TipCard({</span> tip, onComplete }) {
-  const borderClass = <span class="cstat-no" title="statement not covered" >BORDER_COLOR_MAP[tip.color] || 'border-l-muted';</span>
-  const dotClass = <span class="cstat-no" title="statement not covered" >DOT_COLOR_MAP[tip.color] || 'bg-muted';</span>
+function TipCard({ tip, onComplete }) {
+  const borderClass = BORDER_COLOR_MAP[tip.color] || <span class="branch-1 cbranch-no" title="branch not covered" >'border-l-muted';</span>
+  const dotClass = DOT_COLOR_MAP[tip.color] || <span class="branch-1 cbranch-no" title="branch not covered" >'bg-muted';</span>
 &nbsp;
   /**
    * Handles tip completion click, passing tip ID to parent.
    */
-  const <span class="cstat-no" title="statement not covered" >handleComplete = <span class="fstat-no" title="function not covered" >useCallback(() =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" >    onComplete(tip.id);</span>
+  const handleComplete = useCallback(() =&gt; {
+    onComplete(tip.id);
   }, [onComplete, tip.id]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div
       className={`bg-surface1 border-l-4 ${borderClass} rounded-xl p-4 flex items-center gap-3 shadow-card`}
     &gt;
@@ -349,7 +349,7 @@ function <span class="fstat-no" title="function not covered" >TipCard({</span> t
   );
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >TipCard.propTypes = {</span>
+TipCard.propTypes = {
   /** Tip data object */
   tip: PropTypes.shape({
     id: PropTypes.number.isRequired,
@@ -370,7 +370,7 @@ export default TipCard;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-20T18:19:23.586Z
+                at 2026-06-21T09:26:03.793Z
             </div>
         <script src="../prettify.js"></script>
         <script>

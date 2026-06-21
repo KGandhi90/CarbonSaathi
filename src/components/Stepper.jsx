@@ -100,5 +100,3 @@ Stepper.propTypes = {
   /** Optional unit suffix */
   unit: PropTypes.string,
 };
-
-

@@ -12,6 +12,7 @@
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Google Services](#google-services)
+- [Architecture](#architecture)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Carbon Calculation Methodology](#carbon-calculation-methodology)
@@ -109,6 +110,12 @@ Custom events tracked across the user journey:
 
 ---
 
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for a detailed breakdown of the layered structure, data flow, and design patterns used throughout CarbonSaathi.
+
+---
+
 ## Project Structure
 
 ```
@@ -121,7 +128,7 @@ carbonsaathi/
 ├── src/
 │   ├── api/
 │   │   ├── geminiApi.js      ← Gemini integration + system prompt
-│   │   └── firebase.js       ← Firestore + Auth + App Check
+│   │   └── firebase.js       ← Firestore + Auth
 │   │
 │   ├── components/
 │   │   ├── ActivitySection.jsx
@@ -131,7 +138,9 @@ carbonsaathi/
 │   │   ├── Navbar.jsx
 │   │   ├── ScoreRing.jsx
 │   │   ├── StatusBadge.jsx
-│   │   └── TipCard.jsx
+│   │   ├── Stepper.jsx       ← Reusable numeric stepper
+│   │   ├── TipCard.jsx
+│   │   ├── ToggleGroup.jsx   ← Reusable radio toggle group
 │   │   └── WeeklyChart.jsx
 │   │
 │   ├── context/
@@ -153,16 +162,28 @@ carbonsaathi/
 │   │
 │   ├── test/
 │   │   ├── setup.js
-│   │   ├── carbonCalc.test.js
-│   │   ├── helpers.test.js
 │   │   ├── analytics.test.js
+│   │   ├── carbonCalc.test.js
+│   │   ├── constants.test.js
+│   │   ├── errorHandler.test.js
+│   │   ├── helpers.test.js
+│   │   ├── useDashboard.test.js
+│   │   ├── useLog.test.js
+│   │   ├── useTips.test.js
+│   │   ├── ActivitySection.test.jsx
 │   │   ├── CategoryCard.test.jsx
 │   │   ├── ChatBubble.test.jsx
-│   │   └── StatusBadge.test.jsx
+│   │   ├── ScoreRing.test.jsx
+│   │   ├── StatusBadge.test.jsx
+│   │   ├── Stepper.test.jsx
+│   │   ├── TipCard.test.jsx
+│   │   └── ToggleGroup.test.jsx
 │   │
 │   ├── utils/
 │   │   ├── analytics.js      ← GA4 helpers
 │   │   ├── carbonCalc.js     ← Pure emission calculations
+│   │   ├── constants.js      ← Centralized magic numbers
+│   │   ├── errorHandler.js   ← safeAsync wrapper
 │   │   └── helpers.js        ← Shared utilities
 │   │
 │   ├── App.jsx
@@ -172,7 +193,13 @@ carbonsaathi/
 ├── .github/workflows/
 │   └── test.yml              ← CI pipeline
 │
+├── .husky/
+│   └── pre-commit            ← Lint + format gate
+│
+├── ARCHITECTURE.md
+├── jsconfig.json             ← TypeScript checker for JSDoc
 ├── .env.example
+├── .prettierrc
 ├── vercel.json
 ├── vite.config.js
 ├── tailwind.config.js

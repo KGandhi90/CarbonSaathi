@@ -28,9 +28,10 @@ describe('useDashboard — empty state', () => {
     vi.spyOn(firebase, 'getRecentLogs').mockResolvedValue([]);
   });
 
-  it('starts in loading state', () => {
+  it('starts in loading state', async () => {
     const { result } = renderHook(() => useDashboard(), { wrapper });
     expect(result.current.isLoading).toBe(true);
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   it('resolves loading after data fetch', async () => {

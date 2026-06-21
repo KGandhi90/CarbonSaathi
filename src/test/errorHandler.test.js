@@ -1,7 +1,14 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { safeAsync } from '../utils/errorHandler';
 
 describe('safeAsync', () => {
+  let warnSpy;
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
   it('returns the function result on success', async () => {
     const result = await safeAsync(async () => 'success', 'testContext', 'fallback');
     expect(result).toBe('success');
@@ -31,7 +38,6 @@ describe('safeAsync', () => {
   });
 
   it('logs a warning on error', async () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     await safeAsync(
       async () => {
         throw new Error('fail');
@@ -40,6 +46,5 @@ describe('safeAsync', () => {
       null
     );
     expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
   });
 });
